@@ -1,0 +1,1436 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>Blessed Phoenix Trust Co.: iOTFZXX Terminal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      button, [role="button"], select, summary, input:not([type="checkbox"], [type="radio"]) { min-height: 2.75rem; }
+
+      :root {
+        --deep: #032B44;
+        --green: #3E8E41;
+        --gold: #FFD700;
+        --bg: #edf1f4;
+        --surface: #ffffff;
+        --surface-2: #f4f7f9;
+        --ink: #0a2233;
+        --muted: #51707f;
+        --line: #d3dde3;
+        --gold-text: #7a5f00;
+        --gold-soft: #fdf6d8;
+        --green-soft: #e7f2e7;
+        --amber: #9a6200;
+        --amber-soft: #fdf0d5;
+        --danger: #b3261e;
+        --term-bg: #04141f;
+        --term-bg-2: #02101a;
+        --term-line: #123c55;
+        --term-text: #b9cfdd;
+        --term-dim: #6e8fa3;
+        --term-pass: #7fd08a;
+        --term-gold: #ffd700;
+        --term-amber: #f5b942;
+        --shadow: 0 10px 30px rgba(3, 43, 68, .10);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #020d16;
+          --surface: #062639;
+          --surface-2: #04202f;
+          --ink: #e9f2f7;
+          --muted: #9db6c6;
+          --line: #14405c;
+          --gold-text: #ffd700;
+          --gold-soft: rgba(255, 215, 0, .10);
+          --green-soft: rgba(62, 142, 65, .18);
+          --amber: #f5b942;
+          --amber-soft: rgba(245, 185, 66, .12);
+          --danger: #ff8a80;
+          --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+        }
+      }
+
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap { max-width: 1240px; margin: 0 auto; padding: 20px 20px 48px; }
+
+      /* ---------- Masthead ---------- */
+      .masthead {
+        display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+        background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+        padding: 16px 20px; box-shadow: var(--shadow);
+      }
+      .logo-plate {
+        background: #ffffff; border: 1px solid var(--line); border-radius: 10px;
+        padding: 8px 12px; display: flex; align-items: center; flex: 0 0 auto;
+      }
+      .logo-plate img { height: 62px; width: auto; display: block; }
+      .mast-titles { min-width: 220px; flex: 1 1 auto; }
+      .mast-titles .co { font-size: 13px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+      .mast-titles h1 { margin: 2px 0 0; font-size: 27px; line-height: 1.15; font-weight: 700; letter-spacing: -.01em; }
+      .mast-titles h1 .term-name { color: var(--gold-text); }
+      .mast-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+      .pill {
+        display: inline-flex; align-items: center; gap: 7px;
+        font-family: "IBM Plex Mono", monospace; font-size: 12px; font-weight: 600;
+        padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line);
+        background: var(--surface-2); color: var(--ink); white-space: nowrap;
+      }
+      .pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex: 0 0 auto; }
+      .pill.mode { background: var(--amber-soft); border-color: var(--amber); color: var(--amber); }
+      .pill.mode .dot { background: var(--amber); }
+      .pill.clock { font-variant-numeric: tabular-nums; }
+
+      .guardrail {
+        margin-top: 14px; display: flex; gap: 10px; align-items: flex-start;
+        background: var(--amber-soft); border: 1px solid var(--amber); border-radius: 10px;
+        padding: 11px 14px; font-size: 13.5px; line-height: 1.45; color: var(--ink);
+      }
+      .guardrail strong { color: var(--amber); }
+
+      /* ---------- Layout ---------- */
+      .grid { display: grid; grid-template-columns: 392px 1fr; gap: 20px; margin-top: 20px; align-items: start; }
+      .card {
+        background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+        box-shadow: var(--shadow); padding: 20px;
+      }
+      .card h2 {
+        margin: 0 0 4px; font-size: 15px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      }
+      .card .sub { margin: 0 0 16px; font-size: 13px; color: var(--muted); line-height: 1.45; }
+
+      /* ---------- Config form ---------- */
+      .field { margin-bottom: 15px; }
+      .field label { display: block; font-size: 12.5px; font-weight: 600; letter-spacing: .04em; margin-bottom: 6px; }
+      .field .hint { font-size: 12px; color: var(--muted); margin-top: 5px; line-height: 1.4; }
+      .field input, .field select {
+        width: 100%; font: inherit; font-size: 15px; color: var(--ink);
+        background: var(--surface-2); border: 1px solid var(--line); border-radius: 9px;
+        padding: 10px 12px;
+      }
+      .field input.mono, .field select { font-family: "IBM Plex Mono", monospace; font-size: 13.5px; }
+      .field input:focus, .field select:focus { outline: 2px solid var(--green); outline-offset: 1px; border-color: var(--green); }
+      .field input.invalid { border-color: var(--danger); outline-color: var(--danger); }
+      .field .error { display: none; font-size: 12.5px; color: var(--danger); margin-top: 5px; }
+      .field .error.show { display: block; }
+      .amount-row { position: relative; }
+      .amount-row .prefix {
+        position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+        font-family: "IBM Plex Mono", monospace; color: var(--muted); font-size: 15px; pointer-events: none;
+      }
+      .amount-row input { padding-left: 28px; font-size: 17px; font-weight: 600; }
+
+      /* ---------- Destination hook ---------- */
+      .hook-box {
+        border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2);
+        padding: 13px 14px; margin: 2px 0 15px;
+      }
+      .hook-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 7px; }
+      .hook-name { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; font-weight: 600; letter-spacing: .08em; color: var(--gold-text); }
+      .hook-box p { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--ink); }
+      .hook-resolved { margin-top: 9px; font-size: 12.5px; color: var(--muted); }
+      .hook-resolved span { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--ink); font-weight: 600; overflow-wrap: anywhere; }
+      .facts { border-top: 1px solid var(--line); margin-top: 18px; padding-top: 14px; display: grid; gap: 8px; }
+      .facts div { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; }
+      .facts dt { color: var(--muted); }
+      .facts dd { margin: 0; font-family: "IBM Plex Mono", monospace; font-size: 12px; text-align: right; }
+      .actions { display: flex; gap: 10px; margin-top: 18px; }
+      .btn {
+        font: inherit; font-weight: 600; font-size: 15px; cursor: pointer;
+        border-radius: 10px; border: 1px solid transparent; padding: 11px 18px;
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      }
+      .btn-run { background: var(--green); color: #fff; flex: 1 1 auto; }
+      .btn-run:hover { filter: brightness(1.07); }
+      .btn-run:disabled { opacity: .55; cursor: wait; }
+      .btn-ghost { background: var(--surface-2); color: var(--ink); border-color: var(--line); }
+      .btn-ghost:hover { border-color: var(--muted); }
+      .btn:focus-visible, a:focus-visible { outline: 2px solid var(--gold-text); outline-offset: 2px; }
+
+      /* ---------- Pipeline ---------- */
+      .pipeline-card { margin-top: 20px; }
+      .stages { list-style: none; margin: 0; padding: 0; position: relative; }
+      .stages::before {
+        content: ""; position: absolute; left: 17px; top: 22px; bottom: 22px; width: 2px;
+        background: var(--line);
+      }
+      .stage { position: relative; display: flex; gap: 13px; padding: 10px 0; }
+      .stage .node {
+        flex: 0 0 auto; width: 36px; height: 36px; border-radius: 50%; z-index: 1;
+        background: var(--surface-2); border: 2px solid var(--line); color: var(--muted);
+        display: flex; align-items: center; justify-content: center;
+        font-family: "IBM Plex Mono", monospace; font-size: 13px; font-weight: 600;
+        transition: border-color .3s, background .3s, color .3s;
+      }
+      .stage .body { flex: 1 1 auto; min-width: 0; padding-top: 2px; }
+      .stage .name { font-size: 14.5px; font-weight: 600; display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+      .stage .detail { font-size: 12.5px; color: var(--muted); line-height: 1.45; margin-top: 1px; }
+      .chip {
+        font-family: "IBM Plex Mono", monospace; font-size: 10.5px; font-weight: 600; letter-spacing: .06em;
+        padding: 3px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted);
+        background: var(--surface-2); text-transform: uppercase;
+      }
+      .stage.active .node { border-color: var(--gold-text); color: var(--gold-text); background: var(--gold-soft); }
+      .stage.active .chip { border-color: var(--gold-text); color: var(--gold-text); background: var(--gold-soft); }
+      .stage.done .node { border-color: var(--green); background: var(--green); color: #fff; }
+      .stage.done .chip { border-color: var(--green); color: var(--green); background: var(--green-soft); }
+      @media (prefers-reduced-motion: no-preference) {
+        .stage.active .node { animation: pulse 1.1s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, .35); } 50% { box-shadow: 0 0 0 7px rgba(255, 215, 0, 0); } }
+      }
+
+      /* ---------- Console ---------- */
+      .console-card { padding: 0; overflow: hidden; }
+      .console-head {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        background: var(--deep); color: #dcebf5; padding: 12px 16px;
+      }
+      .console-head .lights { display: flex; gap: 7px; }
+      .console-head .lights span { width: 11px; height: 11px; border-radius: 50%; display: block; }
+      .console-head .lights .r { background: #e5534b; } .console-head .lights .y { background: #f5b942; } .console-head .lights .g { background: var(--green); }
+      .console-head .ctitle { font-family: "IBM Plex Mono", monospace; font-size: 13px; font-weight: 500; }
+      .console-head .spacer { flex: 1 1 auto; }
+      .console-head .cbtn {
+        font: inherit; font-family: "IBM Plex Mono", monospace; font-size: 12px; cursor: pointer;
+        background: rgba(255,255,255,.08); color: #dcebf5; border: 1px solid rgba(255,255,255,.25);
+        border-radius: 7px; padding: 7px 12px; min-height: 2.25rem;
+      }
+      .console-head .cbtn:hover { background: rgba(255,255,255,.16); }
+      .console-head .cbtn:disabled { opacity: .45; cursor: default; }
+      .progress { height: 3px; background: var(--term-line); }
+      .progress i { display: block; height: 100%; width: 0%; background: var(--gold); transition: width .4s ease; }
+      .console {
+        background: linear-gradient(180deg, var(--term-bg), var(--term-bg-2));
+        color: var(--term-text);
+        font-family: "IBM Plex Mono", monospace; font-size: 13px; line-height: 1.65;
+        padding: 16px 18px 20px; height: 430px; overflow-y: auto; overflow-x: hidden;
+        overflow-wrap: anywhere;
+      }
+      .console .ln { white-space: pre-wrap; }
+      .console .ts { color: var(--term-dim); }
+      .console .tag { font-weight: 600; }
+      .console .tag.boot { color: var(--term-dim); }
+      .console .tag.check { color: #8ec9ef; }
+      .console .tag.plan { color: var(--term-gold); }
+      .console .tag.sim { color: #c39bf0; }
+      .console .tag.hook { color: var(--term-pass); }
+      .console .pass { color: var(--term-pass); font-weight: 600; }
+      .console .warn { color: var(--term-amber); }
+      .console .head-line { color: #fff; font-weight: 600; }
+      .console .final { color: var(--term-pass); font-weight: 600; }
+      .console .stage-banner {
+        margin: 10px 0 4px; padding: 5px 9px; border: 1px solid var(--term-line); border-radius: 6px;
+        color: #fff; background: rgba(255,255,255,.04); font-weight: 600;
+      }
+      .cursor { display: inline-block; width: 8px; height: 15px; background: var(--term-pass); vertical-align: -2px; }
+      @media (prefers-reduced-motion: no-preference) {
+        .cursor { animation: blink 1s steps(1) infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+      }
+
+      /* ---------- Results ---------- */
+      .results { margin-top: 20px; display: none; }
+      .results.show { display: block; }
+      .results h2 { margin-bottom: 12px; }
+      .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+      .tile { background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 13px 14px; }
+      .tile .k { font-size: 11px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+      .tile .v { font-family: "IBM Plex Mono", monospace; font-size: 16px; font-weight: 600; margin-top: 5px; overflow-wrap: anywhere; }
+      .tile .v.good { color: var(--green); }
+      .results .next { margin: 14px 0 0; font-size: 13.5px; line-height: 1.55; color: var(--ink); }
+      .results .next strong { color: var(--gold-text); }
+      .refline { margin-top: 10px; font-size: 12px; color: var(--muted); font-family: "IBM Plex Mono", monospace; overflow-wrap: anywhere; }
+
+      /* ---------- Connect & Sign ---------- */
+      .sign-card { margin-top: 20px; display: block; }
+      .sign-steps { list-style: none; margin: 0 0 16px; padding: 0; display: grid; gap: 8px; }
+      .sign-steps li {
+        display: flex; align-items: center; gap: 10px; font-size: 13.5px;
+        background: var(--surface-2); border: 1px solid var(--line); border-radius: 9px; padding: 9px 12px;
+      }
+      .sign-steps .sn {
+        flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%;
+        border: 2px solid var(--line); color: var(--muted); background: var(--surface);
+        display: flex; align-items: center; justify-content: center;
+        font-family: "IBM Plex Mono", monospace; font-size: 12px; font-weight: 600;
+      }
+      .sign-steps li.done .sn { border-color: var(--green); background: var(--green); color: #fff; }
+      .sign-steps li .st { flex: 1 1 auto; min-width: 0; }
+      .wallet-status {
+        border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2);
+        padding: 13px 14px; margin-bottom: 15px; font-size: 13px; line-height: 1.55;
+      }
+      .wallet-status .addr { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; overflow-wrap: anywhere; font-weight: 600; }
+      .wallet-status .warn-line { color: var(--amber); font-weight: 600; }
+      .wallet-status .ok-line { color: var(--green); font-weight: 600; }
+      .wallet-status.connecting { border-color: var(--gold-text); background: var(--gold-soft); }
+      .wallet-fallback {
+        display: none; margin-top: 15px; border: 1px solid var(--amber); background: var(--amber-soft);
+        border-radius: 10px; padding: 13px 14px; font-size: 13px; line-height: 1.55;
+      }
+      .wallet-fallback.show { display: block; }
+      .wallet-fallback strong { color: var(--amber); }
+      .wallet-fallback ol { margin: 8px 0 12px; padding-left: 20px; }
+      .wallet-fallback li { margin: 3px 0; }
+      .btn-connect { background: var(--deep); color: #fff; }
+      .btn-connect:hover { filter: brightness(1.2); }
+      .btn-sign { background: var(--gold); color: #231a00; flex: 1 1 auto; }
+      .btn-sign:hover { filter: brightness(1.05); }
+      .btn-sign:disabled, .btn-connect:disabled { opacity: .5; cursor: not-allowed; }
+      .sign-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+      .tx-result {
+        display: none; margin-top: 15px; border: 1px solid var(--green); background: var(--green-soft);
+        border-radius: 10px; padding: 13px 14px; font-size: 13px; line-height: 1.55;
+      }
+      .tx-result.show { display: block; }
+      .tx-result .hash { font-family: "IBM Plex Mono", monospace; font-size: 12px; overflow-wrap: anywhere; font-weight: 600; }
+      .tx-result a { color: var(--green); font-weight: 600; }
+      .sign-note { font-size: 12.5px; color: var(--muted); line-height: 1.5; margin: 12px 0 0; }
+      .console .tag.connect { color: #ffd700; }
+      .console .tag.sign { color: #7fd08a; }
+      .console .tag.tx { color: #8ec9ef; }
+      .console .tag.swap { color: #c39bf0; }
+      .console .tag.found { color: #7fd08a; }
+
+      /* ---------- Backing ---------- */
+      .backing-box {
+        border: 1px solid var(--gold-text); border-radius: 10px; background: var(--gold-soft);
+        padding: 13px 14px; margin-bottom: 15px;
+      }
+      .backing-box .bk-head {
+        font-family: "IBM Plex Mono", monospace; font-size: 11.5px; font-weight: 600;
+        letter-spacing: .08em; color: var(--gold-text); margin-bottom: 9px;
+      }
+      .backing-box dl { margin: 0; display: grid; gap: 9px; }
+      .backing-box .bk-row { display: grid; gap: 2px; }
+      .backing-box dt { font-size: 12px; font-weight: 700; letter-spacing: .03em; }
+      .backing-box dd { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--ink); }
+      .backing-box dd .mono { font-family: "IBM Plex Mono", monospace; font-size: 12px; overflow-wrap: anywhere; }
+      .delivery-lines { margin-top: 9px; display: grid; gap: 5px; font-size: 13px; }
+      .delivery-lines .dl-row { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+      .delivery-lines .dl-k { color: var(--muted); font-weight: 600; }
+      .delivery-lines .dl-v { font-weight: 600; text-align: right; }
+
+      .foot { margin-top: 22px; font-size: 12.5px; color: var(--muted); line-height: 1.55; text-align: center; }
+
+      @media (max-width: 900px) {
+        .grid { grid-template-columns: 1fr; }
+        .tiles { grid-template-columns: repeat(2, 1fr); }
+        .console { height: 380px; font-size: 12.5px; }
+        .logo-plate img { height: 50px; }
+        .mast-titles h1 { font-size: 23px; }
+        .wrap { padding: 14px 14px 40px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+
+      <header class="masthead">
+        <div class="logo-plate">
+          <img src="data:image/jpeg;base64,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" alt="iOTFZXX logo — blue hexagonal mark above the iOTFZXX wordmark" />
+        </div>
+        <div class="mast-titles">
+          <div class="co">Blessed Phoenix Trust Co.</div>
+          <h1><span class="term-name">iOTFZXX</span> Terminal</h1>
+        </div>
+        <div class="mast-meta">
+          <span class="pill mode"><span class="dot"></span>STEP 1 · DRY RUN VALIDATES</span>
+          <span class="pill"><span class="dot"></span>STEP 2 · CONNECT &amp; SIGN — LIVE</span>
+          <span class="pill clock" id="clock" aria-label="Session time">--:--:--</span>
+        </div>
+      </header>
+
+      <div class="guardrail" role="note">
+        <div><strong>Two steps, in order.</strong> The dry run validates the full settlement plan on screen and signs nothing. The Connect &amp; Sign step below it is the <strong>live, terminal-directed transaction</strong>: once a dry run passes, you connect the wallet that controls SettleMint Trust A, the terminal verifies that wallet and the BSC network, then directs an <strong>MUSDV → BNB swap backed by the Allowance Holder balance and the 721 NFT</strong> for you to sign in your wallet — and, once the swap confirms, directs the delivery to Found. No secret key or key material is ever held in this page; signing happens only in your wallet, and your wallet's own confirmation is the final check before anything is sent.</div>
+      </div>
+
+      <div class="grid">
+        <div>
+          <section class="card" aria-labelledby="cfg-h">
+            <h2 id="cfg-h">Run configuration</h2>
+            <p class="sub">The $750 settlement test — the first part of the full $250,000 to Found: treasury to trust, trust through this terminal, delivery to Found.</p>
+
+            <form id="cfg" novalidate>
+              <div class="field">
+                <label for="amount">Test amount (USD)</label>
+                <div class="amount-row">
+                  <span class="prefix">$</span>
+                  <input id="amount" class="mono" type="number" inputmode="decimal" min="1" step="0.01" value="750" />
+                </div>
+                <div class="error" id="amount-error">Enter an amount above $0 and within the verified trust balance of 251,751.94627 MUSDV.</div>
+                <div class="hint">Checked against the SettleMint Trust A balance before the plan is built.</div>
+              </div>
+
+              <div class="field">
+                <label for="dest-mode">Destination accounting — lending file</label>
+                <select id="dest-mode">
+                  <option value="none" selected>None shared — default hook applies</option>
+                  <option value="file">Shared — use the file's destination</option>
+                </select>
+                <div class="hint">The destination follows the files: when the lending file shares destination accounting, the terminal delivers there.</div>
+              </div>
+
+              <div class="field" id="dest-file-wrap" hidden>
+                <label for="dest-file">Destination from lending file</label>
+                <input id="dest-file" class="mono" type="text" placeholder="Destination accounting as shared in the file" />
+                <div class="error" id="dest-error">Enter the destination accounting from the lending file, or switch back to the default hook.</div>
+              </div>
+
+              <div class="field">
+                <label for="dest">Delivery destination (hook-resolved)</label>
+                <input id="dest" class="mono" type="text" value="Found — MKMANAGEMENT receiver" readonly tabindex="-1" />
+                <div class="hint" id="dest-hint">Resolved by the default destination hook. The full $250,000 completes to Found before anything else.</div>
+              </div>
+
+              <div class="hook-box" role="note">
+                <div class="hook-head">
+                  <span class="hook-name">CUSTOM HOOK · resolveDestination()</span>
+                  <span class="chip" id="hook-chip">Default active</span>
+                </div>
+                <p>If no destination accounting is shared with the lending file, the hook directs delivery to <strong>MKMANAGEMENT — the Found receiver</strong>, so the flow never stops for a missing destination. The receiver only routes — it forwards internally to the OUTTHEFREEZER Limited Found account and holds no assets — so the default is safe to keep in the terminal configuration.</p>
+                <div class="hook-resolved">Resolved destination: <span id="hook-resolved">Found — MKMANAGEMENT receiver</span></div>
+              </div>
+
+              <div class="field">
+                <label for="asset">Asset</label>
+                <input id="asset" class="mono" type="text" value="MUSDV — BSC (BEP-20) · 18 decimals" readonly tabindex="-1" />
+              </div>
+
+              <div class="field">
+                <label for="relay">Terminal relay</label>
+                <input id="relay" class="mono" type="text" value="SLVR8 relay — conversion performed in terminal" readonly tabindex="-1" />
+              </div>
+
+              <div class="actions">
+                <button type="submit" class="btn btn-run" id="run-btn">Run dry run</button>
+                <button type="button" class="btn btn-ghost" id="reset-btn">Reset</button>
+              </div>
+            </form>
+
+            <dl class="facts">
+              <div><dt>Operating dept.</dt><dd>Blessed Phoenix Trust Co.</dd></div>
+              <div><dt>Trust</dt><dd>Ambassadors In Love Holdings</dd></div>
+              <div><dt>Source account</dt><dd>SettleMint Trust A</dd></div>
+              <div><dt>Network</dt><dd>BSC · ThirdWeb</dd></div>
+              <div><dt>Route</dt><dd>Treasury → Trust → Terminal → Found</dd></div>
+              <div><dt>Destination hook</dt><dd id="fact-hook">MKMANAGEMENT default</dd></div>
+              <div><dt>ThirdWeb client</dt><dd>MAP · dbc43f4d…0cd6ea99</dd></div>
+              <div><dt>Expected signer</dt><dd>Trust A · 0x68a07C…8746F2</dd></div>
+              <div><dt>MUSDV contract (BSC)</dt><dd>0x603d76…Ca50eAA</dd></div>
+            </dl>
+          </section>
+
+          <section class="card pipeline-card" aria-labelledby="flow-h">
+            <h2 id="flow-h">Settlement flow</h2>
+            <p class="sub">The mock lending flow, end to end — the on-ramp chosen for this run. The terminal performs the conversion after the prior steps, whichever flow applies.</p>
+            <ol class="stages" id="stages">
+              <li class="stage" data-stage="1">
+                <span class="node">1</span>
+                <div class="body">
+                  <div class="name">Intake received <span class="chip">Queued</span></div>
+                  <div class="detail">Lending-flow intake — amount, destination, and purpose captured.</div>
+                </div>
+              </li>
+              <li class="stage" data-stage="2">
+                <span class="node">2</span>
+                <div class="body">
+                  <div class="name">Square invoice → Found <span class="chip">Queued</span></div>
+                  <div class="detail">Square invoice raised; the OUTTHEFREEZER Limited Found record is opened against it.</div>
+                </div>
+              </li>
+              <li class="stage" data-stage="3">
+                <span class="node">3</span>
+                <div class="body">
+                  <div class="name">Treasury → Trust signature <span class="chip">Queued</span></div>
+                  <div class="detail">SettleMint Trust A authorizes the payment by signature.</div>
+                </div>
+              </li>
+              <li class="stage" data-stage="4">
+                <span class="node">4</span>
+                <div class="body">
+                  <div class="name">Terminal conversion <span class="chip">Queued</span></div>
+                  <div class="detail">The terminal runs the conversion code — MUSDV to USD — once the prior steps are complete.</div>
+                </div>
+              </li>
+              <li class="stage" data-stage="5">
+                <span class="node">5</span>
+                <div class="body">
+                  <div class="name">Delivery <span class="chip">Queued</span></div>
+                  <div class="detail">Converted funds delivered direct to the MKMANAGEMENT Found receiver.</div>
+                </div>
+              </li>
+              <li class="stage" data-stage="6">
+                <span class="node">6</span>
+                <div class="body">
+                  <div class="name">Record paid · internal forward <span class="chip">Queued</span></div>
+                  <div class="detail">The receiver forwards to the OUTTHEFREEZER Limited Found account internally; the Square invoice is recorded as paid and the record posts to MAP.</div>
+                </div>
+              </li>
+            </ol>
+          </section>
+        </div>
+
+        <div>
+          <section class="card console-card" aria-labelledby="console-h">
+            <h2 id="console-h" class="sr-only" style="position:absolute;left:-9999px;">Terminal console</h2>
+            <div class="console-head">
+              <span class="lights" aria-hidden="true"><span class="r"></span><span class="y"></span><span class="g"></span></span>
+              <span class="ctitle">iotfzxx — dry-run session</span>
+              <span class="spacer"></span>
+              <button type="button" class="cbtn" id="copy-btn" disabled>Copy log</button>
+              <button type="button" class="cbtn" id="dl-btn" disabled>Download .txt</button>
+            </div>
+            <div class="progress" aria-hidden="true"><i id="progress-bar"></i></div>
+            <div class="console" id="console" role="log" aria-live="polite" aria-label="Dry run console output"></div>
+          </section>
+
+          <section class="card results" id="results" aria-labelledby="res-h">
+            <h2 id="res-h">Dry run results</h2>
+            <div class="tiles">
+              <div class="tile"><div class="k">Plan status</div><div class="v good" id="r-status">—</div></div>
+              <div class="tile"><div class="k">Amount planned</div><div class="v" id="r-amount">—</div></div>
+              <div class="tile"><div class="k">Route</div><div class="v" id="r-route">—</div></div>
+              <div class="tile"><div class="k">Transactions broadcast</div><div class="v good">0</div></div>
+            </div>
+            <p class="next" id="r-next"></p>
+            <p class="refline" id="r-dest"></p>
+            <p class="refline">Last verified on-chain reference — MUSDV placement into SettleMint Trust A: tx 0x42f95b…39dfca · BSC block 130569946 · 251,751.94627 MUSDV.</p>
+          </section>
+
+          <section class="card sign-card" aria-labelledby="sign-h">
+            <h2 id="sign-h">Connect &amp; Sign — terminal-directed transaction</h2>
+            <p class="sub">The MAP secure flow, directed by this terminal. It unlocks only after a dry run passes, so the swap you sign is for the amount that was validated. Connect the wallet that controls SettleMint Trust A — the terminal verifies the wallet and the BSC network before it will build the swap (the wallet needs a little BNB on BSC for gas).</p>
+
+            <ol class="sign-steps">
+              <li id="ss-plan"><span class="sn">1</span><span class="st">Dry run passes — plan validated</span><span class="chip" id="ss-plan-chip">Waiting</span></li>
+              <li id="ss-wallet"><span class="sn">2</span><span class="st">Connect &amp; verify — Trust A wallet on BSC</span><span class="chip" id="ss-wallet-chip">Not connected</span></li>
+              <li id="ss-swap"><span class="sn">3</span><span class="st">Swap — MUSDV → BNB, backed by Allowance Holder / 721 NFT</span><span class="chip" id="ss-swap-chip">Pending</span></li>
+              <li id="ss-found"><span class="sn">4</span><span class="st">Transfer to Found — BNB → USD → Found bank</span><span class="chip" id="ss-found-chip">Pending</span></li>
+            </ol>
+
+            <div class="backing-box" role="note" aria-label="Swap backing">
+              <div class="bk-head">SWAP BACKING — ALLOWANCE HOLDER / 721 NFT · BINDING — VERITAS USDT</div>
+              <dl>
+                <div class="bk-row">
+                  <dt>Allowance Holder balance</dt>
+                  <dd>Aggregated CBB3 Hex bonded collateral — holds WBNB, kBTC, and CBB3 in the system configuration. Together with the 721 NFT below, this is the collateral backing the swap. The Relay Solver found the Allowance Holder because it holds WBNB / kBTC / CBB3, and the Allowance Holder directed a connection to the CBB3 mint.</dd>
+                </div>
+                <div class="bk-row">
+                  <dt>721 NFT</dt>
+                  <dd>SCBMSCBB3 M Silver Tiger · ERC721-C · contract <span class="mono">0x1c258040aA56fc805De5659355a245f3FD7AD90f</span> — collateral backing the swap alongside the Allowance Holder balance.</dd>
+                </div>
+                <div class="bk-row">
+                  <dt>USDT collection — Veritas USDT</dt>
+                  <dd>Created by the CBB3 mint connection directed by the Allowance Holder. The USDT collection gives MUSDV something to bind to the ecosystem — through implementation, Wormhole pairing with MUSDV / USDC, and PancakeSwap Infinity protocol.</dd>
+                </div>
+              </dl>
+            </div>
+
+            <div class="wallet-status" id="wallet-status" role="status">
+              <span id="wallet-status-text">No wallet connected. Connect with the wallet that controls SettleMint Trust A — <span class="addr">0x68a07C8d123fadd65cd76089b5684359b38746F2</span>.</span>
+            </div>
+
+            <form id="sign-form" novalidate>
+              <div class="field">
+                <label for="sign-summary">Swap to sign — directed by the terminal</label>
+                <input id="sign-summary" class="mono" type="text" value="Run a dry run first — the validated swap appears here" readonly tabindex="-1" />
+                <div class="hint">MUSDV on BSC · contract 0x603d76648738EB6210b969f452BCFedDACa50eAA · 18 decimals · chain BSC (56) · path MUSDV → BSC-USD → WBNB, settled as BNB to the signing wallet. Backed by the Allowance Holder balance and the SCBMSCBB3 M Silver Tiger 721 NFT shown above. Found is the fiat destination at the end of this flow — it has no BSC address, and no on-chain transfer is made to it.</div>
+              </div>
+
+              <div class="sign-actions">
+                <button type="button" class="btn btn-connect" id="connect-btn">Connect wallet</button>
+                <button type="submit" class="btn btn-sign" id="sign-btn" disabled>Sign swap in wallet</button>
+                <button type="button" class="btn btn-ghost" id="disconnect-btn" hidden>Disconnect</button>
+              </div>
+            </form>
+
+            <div class="wallet-fallback" id="wallet-fallback" role="alert" tabindex="-1">
+              <strong>Connection started — no wallet answered.</strong> The terminal searched this page for a wallet provider and none responded, so there was nothing to open a wallet prompt. This page is often opened inside another app's embedded view, and wallet extensions and wallet apps cannot inject into an embedded page — when that happens, Connect has no wallet to talk to here, however many times it is pressed.
+              <ol>
+                <li>Open this terminal directly in your wallet's own browser (the browser inside the wallet app you use with ThirdWeb / MAP), or in a desktop browser with that wallet's extension enabled.</li>
+                <li>Unlock the wallet and make sure the account that controls SettleMint Trust A is selected.</li>
+                <li>Come back to this panel and press <strong>Check for wallet again</strong> — the terminal will search again and open the connection request in your wallet.</li>
+              </ol>
+              <button type="button" class="btn btn-connect" id="retry-connect-btn">Check for wallet again</button>
+            </div>
+
+            <div class="tx-result" id="tx-result" role="status">
+              <div><strong id="tx-title">Swap broadcast — signed in your wallet.</strong></div>
+              <div class="hash" id="tx-hash"></div>
+              <div><a id="tx-link" href="#" target="_blank" rel="noopener">View on BscScan</a> · <span id="tx-note"></span></div>
+              <div class="delivery-lines" id="delivery-lines" hidden>
+                <div class="dl-row"><span class="dl-k">Delivery to Found</span><span class="dl-v" id="dl-dest">Found — MKMANAGEMENT receiver</span></div>
+                <div class="dl-row"><span class="dl-k">Amount</span><span class="dl-v" id="dl-amount">—</span></div>
+                <div class="dl-row"><span class="dl-k">Off-ramp directed</span><span class="dl-v">BNB → USD → Found bank account</span></div>
+                <div class="dl-row"><span class="dl-k">Delivery status</span><span class="dl-v" id="dl-status">Swap confirmed — off-ramp to Found directed</span></div>
+              </div>
+            </div>
+
+            <p class="sign-note">Connect searches this page for your browser wallet provider (the same wallet you use with ThirdWeb / MAP Secure Connect, client <span style="font-family:'IBM Plex Mono',monospace;">dbc43f4d2bbd9ede24fe4b4a0cd6ea99</span>) and opens the connection request in it. If no wallet answers — for example, when this terminal is opened inside another app's embedded view, which a wallet cannot reach — the panel under the Connect button explains how to open the terminal in your wallet's browser instead. Signing runs a real swap from the connected wallet: if the swap router does not yet hold a spending approval for your MUSDV, your wallet will first ask you to approve it, then ask you to sign the swap itself. Check the amounts and network in each wallet confirmation before you approve. The BNB → USD off-ramp and the USD push to the Found bank account are directed by the terminal once the swap confirms on-chain; the bank leg settles through the Found receiver's own banking, not on BSC.</p>
+          </section>
+        </div>
+      </div>
+
+      <p class="foot">Blessed Phoenix Trust Co. operates the settlement terminal for the Ambassadors In Love Holdings trust accounts. Dry-run output is a plan validation only — it is not a transaction record. A swap signed through the Connect &amp; Sign panel is a real on-chain transaction from your own wallet; verify it on BscScan.</p>
+    </div>
+
+    <script>
+      (function () {
+        var TRUST_BALANCE = 251751.94627;
+        var TRUST_A_ADDRESS = '0x68a07C8d123fadd65cd76089b5684359b38746F2';
+        var MUSDV_BSC_CONTRACT = '0x603d76648738EB6210b969f452BCFedDACa50eAA';
+        var BSC_USD_CONTRACT = '0x55d398326f99059fF775485246999027B3197955';
+        var WBNB_CONTRACT = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
+        var SWAP_ROUTER = '0x10ED43C718714eb63d5aA57B78B54704E256024E'; /* PancakeSwap V2 Router02, BSC */
+        var NFT_721_CONTRACT = '0x1c258040aA56fc805De5659355a245f3FD7AD90f'; /* SCBMSCBB3 M Silver Tiger, ERC721-C */
+        var BSC_CHAIN_ID = '0x38'; /* 56 */
+        var THIRDWEB_CLIENT_ID = 'dbc43f4d2bbd9ede24fe4b4a0cd6ea99';
+        var consoleEl = document.getElementById('console');
+        var runBtn = document.getElementById('run-btn');
+        var resetBtn = document.getElementById('reset-btn');
+        var copyBtn = document.getElementById('copy-btn');
+        var dlBtn = document.getElementById('dl-btn');
+        var amountInput = document.getElementById('amount');
+        var amountError = document.getElementById('amount-error');
+        var destMode = document.getElementById('dest-mode');
+        var destFile = document.getElementById('dest-file');
+        var destFileWrap = document.getElementById('dest-file-wrap');
+        var destError = document.getElementById('dest-error');
+        var destInput = document.getElementById('dest');
+        var destHint = document.getElementById('dest-hint');
+        var hookChip = document.getElementById('hook-chip');
+        var hookResolved = document.getElementById('hook-resolved');
+        var factHook = document.getElementById('fact-hook');
+        var rDest = document.getElementById('r-dest');
+        var connectBtn = document.getElementById('connect-btn');
+        var retryConnectBtn = document.getElementById('retry-connect-btn');
+        var walletFallback = document.getElementById('wallet-fallback');
+        var walletStatusEl = document.getElementById('wallet-status');
+        var signBtn = document.getElementById('sign-btn');
+        var disconnectBtn = document.getElementById('disconnect-btn');
+        var signSummary = document.getElementById('sign-summary');
+        var walletStatusText = document.getElementById('wallet-status-text');
+        var txResult = document.getElementById('tx-result');
+        var txTitle = document.getElementById('tx-title');
+        var txHashEl = document.getElementById('tx-hash');
+        var txLink = document.getElementById('tx-link');
+        var txNote = document.getElementById('tx-note');
+        var deliveryLines = document.getElementById('delivery-lines');
+        var dlDest = document.getElementById('dl-dest');
+        var dlAmount = document.getElementById('dl-amount');
+        var dlStatus = document.getElementById('dl-status');
+        var DEFAULT_DEST = 'Found — MKMANAGEMENT receiver';
+        var progressBar = document.getElementById('progress-bar');
+        var resultsEl = document.getElementById('results');
+        var stageEls = Array.prototype.slice.call(document.querySelectorAll('.stage'));
+        var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var logLines = [];
+        var running = false;
+        var timers = [];
+        var validatedPlan = null; /* { amount, destLabel, planRef } — set only by a passing dry run */
+        var connectedAccount = null;
+        var connectedChainId = null;
+        var connecting = false;
+        var activeProvider = null;
+        var providerListenersFor = null;
+        var signing = false;
+        var swapState = 'idle'; /* idle | awaiting | broadcast | confirmed | failed */
+        var swapHash = null;
+
+        var usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+        var num = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        function pad(n) { return (n < 10 ? '0' : '') + n; }
+        function stamp() {
+          var d = new Date();
+          return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+        }
+
+        /* Session clock */
+        var clockEl = document.getElementById('clock');
+        function tickClock() {
+          var d = new Date();
+          clockEl.textContent = d.toLocaleTimeString('en-US', { hour12: false }) + ' local';
+        }
+        tickClock();
+        setInterval(tickClock, 1000);
+
+        function esc(s) {
+          return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function addLine(tag, text, cls) {
+          var line = document.createElement('div');
+          line.className = 'ln';
+          var plain = '[' + stamp() + '] ' + (tag ? tag + ' ' : '') + text;
+          logLines.push(plain);
+          line.innerHTML = '<span class="ts">[' + stamp() + ']</span> ' +
+            (tag ? '<span class="tag ' + tagClass(tag) + '">' + esc(tag) + '</span> ' : '') +
+            '<span class="' + (cls || '') + '">' + esc(text) + '</span>';
+          consoleEl.appendChild(line);
+          consoleEl.scrollTop = consoleEl.scrollHeight;
+          return line;
+        }
+        function tagClass(tag) {
+          if (tag === 'BOOT') return 'boot';
+          if (tag === 'CHECK') return 'check';
+          if (tag === 'PLAN') return 'plan';
+          if (tag === 'SIM') return 'sim';
+          if (tag === 'HOOK') return 'hook';
+          if (tag === 'CONNECT') return 'connect';
+          if (tag === 'SIGN') return 'sign';
+          if (tag === 'TX') return 'tx';
+          if (tag === 'SWAP') return 'swap';
+          if (tag === 'FOUND') return 'found';
+          return 'boot';
+        }
+        function addBanner(text) {
+          var line = document.createElement('div');
+          line.className = 'ln stage-banner';
+          line.textContent = text;
+          logLines.push('== ' + text + ' ==');
+          consoleEl.appendChild(line);
+          consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+        function showCursor() {
+          var c = document.createElement('div');
+          c.className = 'ln';
+          c.id = 'cursor-line';
+          c.innerHTML = '<span class="cursor"></span>';
+          consoleEl.appendChild(c);
+          consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+        function hideCursor() {
+          var c = document.getElementById('cursor-line');
+          if (c) c.remove();
+        }
+
+        /* Destination hook — the destination follows the files. When the
+           lending file shares destination accounting, the hook yields to it;
+           otherwise it resolves to the MKMANAGEMENT Found receiver, which
+           only routes and holds no assets, so the flow never stops. */
+        function resolveDestination() {
+          if (destMode.value === 'file') {
+            var v = destFile.value.replace(/\s+/g, ' ').trim();
+            if (v) return { label: v, isDefault: false };
+            return null;
+          }
+          return { label: DEFAULT_DEST, isDefault: true };
+        }
+
+        /* ---------- Connect & Sign hook ---------- */
+        function shortAddr(a) {
+          if (!a || a.length < 12) return a || '';
+          return a.slice(0, 6) + '…' + a.slice(-4);
+        }
+        function isValidAddress(a) {
+          return /^0x[0-9a-fA-F]{40}$/.test((a || '').trim());
+        }
+        function amountToWei(amountStr) {
+          var s = String(amountStr).trim();
+          var neg = false;
+          if (s.charAt(0) === '-') { neg = true; s = s.slice(1); }
+          var parts = s.split('.');
+          var whole = (parts[0] || '0').replace(/[^0-9]/g, '') || '0';
+          var frac = ((parts[1] || '') + '000000000000000000').slice(0, 18);
+          var wei = BigInt(whole) * BigInt('1000000000000000000') + BigInt(frac || '0');
+          return neg ? -wei : wei;
+        }
+        function pad32(hex) {
+          var h = String(hex).toLowerCase();
+          while (h.length < 64) h = '0' + h;
+          return h;
+        }
+        function addrWord(a) { return pad32(a.trim().slice(2)); }
+        function buildApproveData(spender, amountStr) {
+          var wei = amountToWei(amountStr);
+          return '0x095ea7b3' + addrWord(spender) + pad32(wei.toString(16)); /* ERC-20 approve(address,uint256) */
+        }
+        function buildAllowanceData(owner, spender) {
+          return '0xdd62ed3e' + addrWord(owner) + addrWord(spender); /* ERC-20 allowance(address,address) */
+        }
+        function buildSwapData(amountStr, toAddress) {
+          var wei = amountToWei(amountStr);
+          var deadline = Math.floor(Date.now() / 1000) + 1200; /* 20 minutes */
+          var path = [MUSDV_BSC_CONTRACT, BSC_USD_CONTRACT, WBNB_CONTRACT];
+          var data = '0x18cbafe5'; /* swapExactTokensForETH(uint256,uint256,address[],address,uint256) */
+          data += pad32(wei.toString(16));          /* amountIn */
+          data += pad32('0');                        /* amountOutMin — the wallet shows the expected BNB before you approve */
+          data += pad32('a0');                       /* offset of path array */
+          data += addrWord(toAddress);               /* BNB settles to the signing wallet */
+          data += pad32(deadline.toString(16));      /* deadline */
+          data += pad32(path.length.toString(16));   /* path length */
+          path.forEach(function (a) { data += addrWord(a); });
+          return data;
+        }
+        function setStep(id, numLabel, done, chipText) {
+          var li = document.getElementById(id);
+          var chip = document.getElementById(id + '-chip');
+          if (!li || !chip) return;
+          if (done) { li.classList.add('done'); li.querySelector('.sn').textContent = '✓'; }
+          else { li.classList.remove('done'); li.querySelector('.sn').textContent = numLabel; }
+          chip.textContent = chipText;
+        }
+        function updateSignUI() {
+          var planOk = !!validatedPlan;
+          var isTrustA = !!connectedAccount && connectedAccount.toLowerCase() === TRUST_A_ADDRESS.toLowerCase();
+          var onBsc = connectedChainId === BSC_CHAIN_ID;
+          var walletOk = !!connectedAccount && isTrustA && onBsc;
+          setStep('ss-plan', '1', planOk, planOk ? 'Pass · ' + validatedPlan.planRef : 'Waiting');
+          setStep('ss-wallet', '2', walletOk,
+            connecting ? 'Connecting…'
+              : !connectedAccount ? 'Not connected'
+              : (!isTrustA ? 'Not Trust A — swap locked' : (!onBsc ? 'Wrong network' : 'Verified · Trust A · BSC')));
+          setStep('ss-swap', '3', swapState === 'confirmed',
+            swapState === 'confirmed' ? 'Confirmed on BSC'
+              : swapState === 'broadcast' ? 'Broadcast — confirming…'
+              : swapState === 'awaiting' ? 'In wallet…'
+              : swapState === 'failed' ? 'Not completed'
+              : 'Pending');
+          setStep('ss-found', '4', swapState === 'confirmed',
+            swapState === 'confirmed' ? 'Directed to Found' : 'Pending');
+          if (planOk) {
+            signSummary.value = num.format(validatedPlan.amount) + ' MUSDV → BNB · BSC · backed by Allowance Holder / 721 NFT · plan ' + validatedPlan.planRef;
+          } else {
+            signSummary.value = 'Run a dry run first — the validated swap appears here';
+          }
+          if (!connectedAccount) {
+            if (!connecting) {
+              walletStatusText.innerHTML = 'No wallet connected. Connect with the wallet that controls SettleMint Trust A — <span class="addr">' + TRUST_A_ADDRESS + '</span>.';
+            }
+            connectBtn.textContent = connecting ? 'Connecting…' : 'Connect wallet';
+            disconnectBtn.hidden = true;
+          } else {
+            var netLine = onBsc
+              ? '<span class="ok-line">Network: BSC (56) ✓</span>'
+              : '<span class="warn-line">Network is not BSC — the sign step will ask your wallet to switch to BSC (56).</span>';
+            walletStatusText.innerHTML = 'Connected: <span class="addr">' + connectedAccount + '</span><br />' + netLine + '<br />' +
+              (isTrustA
+                ? '<span class="ok-line">Verified — this wallet controls SettleMint Trust A, the signer for this flow ✓</span>'
+                : '<span class="warn-line">Verification failed — this wallet does not control SettleMint Trust A (' + shortAddr(TRUST_A_ADDRESS) + '). The swap stays locked until the Trust A wallet is connected.</span>');
+            connectBtn.textContent = 'Wallet connected';
+            disconnectBtn.hidden = false;
+          }
+          signBtn.disabled = !(planOk && walletOk) || signing || swapState === 'broadcast' || swapState === 'confirmed';
+          connectBtn.disabled = !!connectedAccount || signing || connecting;
+        }
+        function invalidatePlan(reason) {
+          if (!validatedPlan) { updateSignUI(); return; }
+          validatedPlan = null;
+          swapState = 'idle';
+          swapHash = null;
+          txResult.classList.remove('show');
+          deliveryLines.hidden = true;
+          signBtn.textContent = 'Sign swap in wallet';
+          addLine('SIGN', 'Validated plan cleared — ' + reason + '. Run the dry run again before signing.');
+          updateSignUI();
+        }
+
+        function updateDestUI() {
+          var isFile = destMode.value === 'file';
+          destFileWrap.hidden = !isFile;
+          var d = resolveDestination();
+          var label = d ? d.label : DEFAULT_DEST;
+          destInput.value = label;
+          hookResolved.textContent = label;
+          hookChip.textContent = isFile ? (d ? 'File destination' : 'File destination — pending') : 'Default active';
+          factHook.textContent = isFile ? 'Lending file accounting' : 'MKMANAGEMENT default';
+          destHint.textContent = isFile
+            ? 'Taken from the destination accounting shared with the lending file — the default hook stands down.'
+            : 'Resolved by the default destination hook. The full $250,000 completes to Found before anything else.';
+          if (!isFile) {
+            destFile.classList.remove('invalid');
+            destError.classList.remove('show');
+          }
+        }
+
+        function boot() {
+          consoleEl.innerHTML = '';
+          logLines = [];
+          addLine('BOOT', 'iOTFZXX Terminal — Blessed Phoenix Trust Co. operating department');
+          addLine('BOOT', 'Mode: DRY RUN first · Connect & Sign LIVE after validation · no key material in this panel');
+          addLine('BOOT', 'Trust accounts: SettleMint Trust A (source) · bWallet Trust B');
+          addLine('HOOK', 'Destination hook armed — destination follows the lending file; MKMANAGEMENT default when none is shared');
+          addLine('SIGN', 'Directed transaction armed — ThirdWeb / MAP wallet connect (client ' + THIRDWEB_CLIENT_ID.slice(0, 8) + '…); verifies the Trust A wallet on BSC, then directs the MUSDV → BNB swap backed by the Allowance Holder balance and the 721 NFT; delivery to Found follows the swap');
+          addLine('BOOT', 'Session ready. Configure the run and press "Run dry run".');
+          showCursor();
+        }
+
+        function setStage(n, state) {
+          var el = stageEls[n - 1];
+          if (!el) return;
+          el.classList.remove('active', 'done');
+          var chip = el.querySelector('.chip');
+          var node = el.querySelector('.node');
+          if (state === 'active') { el.classList.add('active'); chip.textContent = 'Running'; }
+          else if (state === 'done') { el.classList.add('done'); chip.textContent = 'Pass'; node.textContent = '✓'; }
+          else { chip.textContent = 'Queued'; node.textContent = String(n); }
+        }
+        function resetStages() {
+          for (var i = 1; i <= 6; i++) setStage(i, 'queued');
+          progressBar.style.width = '0%';
+        }
+
+        function buildScript(amount, dest, planRef) {
+          var amt = usd.format(amount);
+          var musdv = num.format(amount) + ' MUSDV';
+          return [
+            { stage: 1, banner: 'STAGE 1 / 6 — INTAKE', lines: [
+              ['CHECK', 'Intake payload received — mock lending flow, settlement test profile'],
+              ['CHECK', 'Fields validated: amount ' + amt + ' · destination ' + dest.label + ' · purpose: settlement test', 'pass'],
+              ['PLAN', 'Plan reference ' + planRef + ' opened']
+            ]},
+            { stage: 2, banner: 'STAGE 2 / 6 — SQUARE INVOICE → FOUND', lines: [
+              ['CHECK', 'Square invoice drafted — OUTTHEFREEZER Limited Found record opened'],
+              ['PLAN', 'Invoice amount ' + amt + ' · status: DRAFT — created in plan only, not sent', 'warn'],
+              ['CHECK', 'Invoice reference bound to intake plan', 'pass']
+            ]},
+            { stage: 3, banner: 'STAGE 3 / 6 — TREASURY → TRUST SIGNATURE PAYMENT', lines: [
+              ['CHECK', 'Source identified: SettleMint Trust A (treasury → trust)'],
+              ['CHECK', 'Verified balance on record: 251,751.94627 MUSDV — placement tx 0x42f95b…39dfca, BSC block 130569946'],
+              ['CHECK', 'Coverage check: ' + musdv + ' required against 251,751.94627 MUSDV available', 'pass'],
+              ['SIM', 'Trust signature simulated in the dry run — the real signature is provided in the Connect & Sign step below, in your wallet; no key material is held in this panel', 'warn']
+            ]},
+            { stage: 4, banner: 'STAGE 4 / 6 — TERMINAL CONVERSION (AUTOMATED)', lines: [
+              ['CHECK', 'ThirdWeb session reachable — settlement API responding', 'pass'],
+              ['CHECK', 'SLVR8 relay wallet resolved', 'pass'],
+              ['CHECK', 'MUSDV contract on BSC verified — BEP-20 · 18 decimals', 'pass'],
+              ['PLAN', 'Conversion quote (simulated): ' + musdv + ' → ' + amt + ' at 1.0000 — conversion performed in terminal']
+            ]},
+            { stage: 5, banner: 'STAGE 5 / 6 — DELIVERY', lines: [
+              ['PLAN', 'Delivery instruction assembled — direct funds to ' + (dest.isDefault ? 'the MKMANAGEMENT Found receiver' : dest.label) + '. NOT transmitted.', 'warn'],
+              ['CHECK', 'Delivery route confirmed: Treasury → Trust A → Terminal → Found', 'pass']
+            ]},
+            { stage: 6, banner: 'STAGE 6 / 6 — RECORD PAID · INTERNAL FORWARD', lines: [
+              dest.isDefault
+                ? ['PLAN', 'Internal forward prepared: MKMANAGEMENT receiver → OUTTHEFREEZER Limited Found account — held in plan only']
+                : ['PLAN', 'Distribution prepared per the lending file destination accounting — held in plan only'],
+              ['PLAN', 'Square invoice marked PAID in plan — recorded as paid on delivery'],
+              ['PLAN', 'MAP ledger entry prepared — not posted'],
+              ['CHECK', 'End-to-end plan reconciles: intake ' + amt + ' = delivery ' + amt, 'pass']
+            ]}
+          ];
+        }
+
+        function schedule(fn, delay) {
+          if (reduced || delay <= 0) { fn(); return; }
+          timers.push(setTimeout(fn, delay));
+        }
+
+        function runDryRun() {
+          if (running) return;
+          var amount = parseFloat(amountInput.value);
+          if (!(amount > 0) || amount > TRUST_BALANCE) {
+            amountInput.classList.add('invalid');
+            amountError.classList.add('show');
+            amountInput.focus();
+            return;
+          }
+          amountInput.classList.remove('invalid');
+          amountError.classList.remove('show');
+
+          var dest = resolveDestination();
+          if (!dest) {
+            destFile.classList.add('invalid');
+            destError.classList.add('show');
+            destFile.focus();
+            return;
+          }
+          destFile.classList.remove('invalid');
+          destError.classList.remove('show');
+
+          running = true;
+          runBtn.disabled = true;
+          runBtn.textContent = 'Running…';
+          copyBtn.disabled = true;
+          dlBtn.disabled = true;
+          resultsEl.classList.remove('show');
+          resetStages();
+          hideCursor();
+          addLine('', '———————————————————————————————');
+          addLine('BOOT', 'Dry run started — validating the full flow. Nothing will be signed, sent, or broadcast.');
+          if (dest.isDefault) {
+            addLine('HOOK', 'No destination accounting shared with the lending file — default hook resolved → ' + dest.label + ' (routes only, holds no assets; the flow continues)');
+          } else {
+            addLine('HOOK', 'Destination accounting shared with the lending file — hook yields to the file destination → ' + dest.label);
+          }
+
+          validatedPlan = null;
+          swapState = 'idle';
+          swapHash = null;
+          txResult.classList.remove('show');
+          deliveryLines.hidden = true;
+          signBtn.textContent = 'Sign swap in wallet';
+          updateSignUI();
+          var planRef = 'DR-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + Math.floor(1000 + Math.random() * 9000);
+          var script = buildScript(amount, dest, planRef);
+          var t = reduced ? 0 : 350;
+
+          script.forEach(function (block) {
+            schedule(function () {
+              stageEls.forEach(function (el, idx) {
+                if (idx + 1 < block.stage && !el.classList.contains('done')) setStage(idx + 1, 'done');
+              });
+              setStage(block.stage, 'active');
+              addBanner(block.banner);
+            }, t);
+            t += reduced ? 0 : 260;
+            block.lines.forEach(function (ln) {
+              schedule(function () { addLine(ln[0], ln[1], ln[2]); }, t);
+              t += reduced ? 0 : 300 + Math.random() * 220;
+            });
+            schedule(function () {
+              setStage(block.stage, 'done');
+              progressBar.style.width = Math.round((block.stage / 6) * 100) + '%';
+            }, t);
+            t += reduced ? 0 : 240;
+          });
+
+          schedule(function () {
+            addLine('', '———————————————————————————————');
+            var done = document.createElement('div');
+            done.className = 'ln final';
+            done.textContent = 'DRY RUN COMPLETE — plan validated end to end, all 6 stages PASS.';
+            logLines.push('DRY RUN COMPLETE — plan validated end to end, all 6 stages PASS.');
+            consoleEl.appendChild(done);
+            addLine('BOOT', 'Transactions broadcast: 0 · Funds moved: $0.00 · Invoices sent: 0');
+            validatedPlan = { amount: amount, destLabel: dest.label, planRef: planRef };
+            swapState = 'idle';
+            swapHash = null;
+            addLine('SIGN', 'Directed transaction unlocked for plan ' + planRef + ' — connect and verify the Trust A wallet below to sign the validated MUSDV → BNB swap, backed by the Allowance Holder balance and the 721 NFT.');
+            addLine('BOOT', 'Terminal standing by. The dry run sent nothing; signing is a separate, live step in your wallet.');
+            showCursor();
+            document.getElementById('r-status').textContent = 'VALIDATED';
+            document.getElementById('r-amount').textContent = usd.format(amount) + ' → ' + num.format(amount) + ' MUSDV';
+            document.getElementById('r-route').textContent = 'Treasury → Trust → Terminal → Found';
+            rDest.textContent = dest.isDefault
+              ? 'Destination resolution: default hook → ' + dest.label + ' — no destination accounting was shared with the lending file.'
+              : 'Destination resolution: lending-file accounting → ' + dest.label + ' — default hook stood down.';
+            document.getElementById('r-next').innerHTML = '<strong>Next step — Connect &amp; Sign below.</strong> ' + esc('Connect the wallet that controls SettleMint Trust A; the terminal verifies it on BSC, then directs the MUSDV → BNB swap for this validated amount — backed by the Allowance Holder balance and the 721 NFT — and, once the swap confirms, directs the delivery to ' + dest.label + '. This test counts toward the full $250,000 delivery — ' + usd.format(250000 - amount) + ' remains to complete the invoice requirement.');
+            updateSignUI();
+            resultsEl.classList.add('show');
+            copyBtn.disabled = false;
+            dlBtn.disabled = false;
+            running = false;
+            runBtn.disabled = false;
+            runBtn.textContent = 'Run dry run again';
+          }, t);
+        }
+
+        document.getElementById('cfg').addEventListener('submit', function (e) {
+          e.preventDefault();
+          runDryRun();
+        });
+
+        amountInput.addEventListener('input', function () {
+          amountInput.classList.remove('invalid');
+          amountError.classList.remove('show');
+          if (validatedPlan && parseFloat(amountInput.value) !== validatedPlan.amount) invalidatePlan('the amount changed');
+        });
+
+        destMode.addEventListener('change', function () {
+          updateDestUI();
+          invalidatePlan('the destination changed');
+        });
+        destFile.addEventListener('input', function () {
+          destFile.classList.remove('invalid');
+          destError.classList.remove('show');
+          updateDestUI();
+          invalidatePlan('the destination changed');
+        });
+
+        /* ---------- Wallet connect (EIP-1193 provider) ---------- */
+        /* Wallets announce themselves in several ways, and often late:
+           window.ethereum (sometimes with a .providers array), wallet-specific
+           globals, the EIP-6963 announce event, or ethereum#initialized.
+           The previous build checked window.ethereum exactly once, at click
+           time — inside an embedded/app view, or before a wallet browser had
+           finished injecting, that check found nothing and Connect appeared
+           to do nothing at all. Connect now runs a real discovery pass. */
+        var eip6963Providers = [];
+        window.addEventListener('eip6963:announceProvider', function (ev) {
+          if (ev && ev.detail && ev.detail.provider && typeof ev.detail.provider.request === 'function') {
+            eip6963Providers.push(ev.detail.provider);
+          }
+        });
+        function providerFromGlobals() {
+          var candidates = [];
+          if (window.ethereum) {
+            if (Array.isArray(window.ethereum.providers)) {
+              window.ethereum.providers.forEach(function (pr) { candidates.push(pr); });
+            }
+            candidates.push(window.ethereum);
+          }
+          if (window.BinanceChain) candidates.push(window.BinanceChain);
+          if (window.trustwallet && window.trustwallet.ethereum) candidates.push(window.trustwallet.ethereum);
+          if (window.coinbaseWalletExtension) candidates.push(window.coinbaseWalletExtension);
+          for (var i = 0; i < candidates.length; i++) {
+            if (candidates[i] && typeof candidates[i].request === 'function') return candidates[i];
+          }
+          return null;
+        }
+        function getProvider() {
+          if (activeProvider && typeof activeProvider.request === 'function') return activeProvider;
+          if (eip6963Providers.length) return eip6963Providers[0];
+          return providerFromGlobals();
+        }
+        function discoverProvider(timeoutMs) {
+          var found = getProvider();
+          if (found) { activeProvider = found; return Promise.resolve(found); }
+          return new Promise(function (resolve) {
+            var done = false;
+            function finish(p) {
+              if (done) return;
+              done = true;
+              window.removeEventListener('eip6963:announceProvider', onAnnounce);
+              window.removeEventListener('ethereum#initialized', onInit);
+              if (p) activeProvider = p;
+              resolve(p || null);
+            }
+            function onAnnounce() { var p = getProvider(); if (p) finish(p); }
+            function onInit() { var p = getProvider(); if (p) finish(p); }
+            window.addEventListener('eip6963:announceProvider', onAnnounce);
+            window.addEventListener('ethereum#initialized', onInit);
+            try { window.dispatchEvent(new Event('eip6963:requestProvider')); } catch (e) {}
+            var waited = 0;
+            var iv = setInterval(function () {
+              var p = getProvider();
+              waited += 200;
+              if (p) { clearInterval(iv); finish(p); }
+              else if (waited >= timeoutMs) { clearInterval(iv); finish(null); }
+            }, 200);
+          });
+        }
+        function attachProviderListeners(p) {
+          if (!p || providerListenersFor === p || typeof p.on !== 'function') return;
+          providerListenersFor = p;
+          p.on('accountsChanged', function (accounts) {
+            connectedAccount = (accounts && accounts.length) ? accounts[0] : null;
+            addLine('CONNECT', connectedAccount ? 'Wallet account changed: ' + connectedAccount : 'Wallet disconnected.');
+            refreshChain();
+            updateSignUI();
+          });
+          p.on('chainChanged', function (cid) {
+            connectedChainId = cid;
+            addLine('CONNECT', 'Network changed: chain ' + cid + (cid === BSC_CHAIN_ID ? ' (BSC ✓)' : ' — BSC (0x38) is required to sign'));
+            updateSignUI();
+          });
+        }
+        function refreshChain() {
+          var p = getProvider();
+          if (!p || !connectedAccount) return Promise.resolve();
+          return p.request({ method: 'eth_chainId' }).then(function (cid) {
+            connectedChainId = cid;
+            updateSignUI();
+          }).catch(function () {});
+        }
+        function ensureBsc() {
+          var p = getProvider();
+          if (!p) return Promise.reject(new Error('no provider'));
+          if (connectedChainId === BSC_CHAIN_ID) return Promise.resolve();
+          addLine('CONNECT', 'Requesting network switch to BSC (56) in your wallet…');
+          return p.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: BSC_CHAIN_ID }] })
+            .catch(function (err) {
+              if (err && err.code === 4902) {
+                return p.request({ method: 'wallet_addEthereumChain', params: [{
+                  chainId: BSC_CHAIN_ID, chainName: 'BNB Smart Chain',
+                  nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
+                  rpcUrls: ['https://bsc-dataseed.binance.org/'],
+                  blockExplorerUrls: ['https://bscscan.com']
+                }] });
+              }
+              throw err;
+            })
+            .then(function () { return p.request({ method: 'eth_chainId' }); })
+            .then(function (cid) { connectedChainId = cid; updateSignUI(); });
+        }
+
+        function initiateConnect() {
+          if (connecting || connectedAccount) return;
+          connecting = true;
+          walletFallback.classList.remove('show');
+          walletStatusEl.classList.add('connecting');
+          walletStatusText.innerHTML = '<strong>Connecting…</strong> Searching this page for your wallet. If a wallet prompt or a wallet-app switch appears, approve the connection there — this panel updates as soon as the wallet answers.';
+          updateSignUI();
+          hideCursor();
+          addLine('CONNECT', 'Connect initiated — searching for a wallet provider on this page (injected, EIP-6963, and wallet-browser providers)…');
+          discoverProvider(3000).then(function (p) {
+            if (!p) {
+              connecting = false;
+              walletStatusEl.classList.remove('connecting');
+              addLine('CONNECT', 'No wallet provider answered on this page after a full search. A wallet cannot be prompted from here — see the connection panel below the Connect button for how to open this terminal where your wallet can reach it.', 'warn');
+              walletStatusText.innerHTML = '<span class="warn-line">No wallet found on this page.</span> Connect could not start a wallet prompt because no wallet is reachable here — follow the steps in the panel below, then check again.';
+              updateSignUI();
+              walletFallback.classList.add('show');
+              walletFallback.scrollIntoView({ block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
+              walletFallback.focus({ preventScroll: true });
+              showCursor();
+              return;
+            }
+            attachProviderListeners(p);
+            addLine('CONNECT', 'Wallet provider found — requesting connection. Approve it in your wallet; if your wallet opened as a separate app, approve there and return here.');
+            walletStatusText.innerHTML = '<strong>Wallet found — connection request sent.</strong> Check your wallet and approve the connection. This panel updates as soon as the wallet answers.';
+            return p.request({ method: 'eth_requestAccounts' }).then(function (accounts) {
+              if (!accounts || !accounts.length) throw new Error('no accounts returned');
+              connectedAccount = accounts[0];
+              addLine('CONNECT', 'Wallet connected: ' + connectedAccount, 'pass');
+              if (connectedAccount.toLowerCase() === TRUST_A_ADDRESS.toLowerCase()) {
+                addLine('CONNECT', 'Verified — connected wallet controls SettleMint Trust A, the signer for this flow ✓', 'pass');
+              } else {
+                addLine('CONNECT', 'Verification failed — connected wallet is not SettleMint Trust A (' + TRUST_A_ADDRESS + '). The swap stays locked until the Trust A wallet is connected.', 'warn');
+              }
+              return refreshChain();
+            }).then(function () {
+              connecting = false;
+              walletStatusEl.classList.remove('connecting');
+              updateSignUI();
+              showCursor();
+            }).catch(function (err) {
+              connecting = false;
+              walletStatusEl.classList.remove('connecting');
+              var rejected = err && err.code === 4001;
+              addLine('CONNECT', rejected
+                ? 'Connection request was rejected in the wallet — nothing connected. Press Connect wallet to start it again.'
+                : 'Connection not completed: ' + (err && err.message ? err.message : 'request rejected in wallet'), 'warn');
+              walletStatusText.innerHTML = rejected
+                ? '<span class="warn-line">Connection rejected in the wallet.</span> Press Connect wallet to start the request again.'
+                : '<span class="warn-line">Connection did not complete.</span> Press Connect wallet to try again.';
+              updateSignUI();
+              showCursor();
+            });
+          });
+        }
+
+        connectBtn.addEventListener('click', initiateConnect);
+        retryConnectBtn.addEventListener('click', initiateConnect);
+
+        disconnectBtn.addEventListener('click', function () {
+          connectedAccount = null;
+          connectedChainId = null;
+          addLine('CONNECT', 'Wallet disconnected in this panel. (This clears the page\'s view only; manage the site connection in your wallet as well.)');
+          updateSignUI();
+        });
+
+        /* If a provider is already present at load, listen from the start;
+           otherwise listeners attach when Connect discovers one. */
+        var bootProvider = getProvider();
+        if (bootProvider) { activeProvider = bootProvider; attachProviderListeners(bootProvider); }
+
+        /* ---------- Sign the directed swap, then direct delivery to Found ---------- */
+        function pollSwapReceipt(p, txHash, attemptsLeft) {
+          p.request({ method: 'eth_getTransactionReceipt', params: [txHash] }).then(function (receipt) {
+            if (!receipt) {
+              if (attemptsLeft > 0) {
+                setTimeout(function () { pollSwapReceipt(p, txHash, attemptsLeft - 1); }, 4000);
+              } else {
+                addLine('SWAP', 'Swap broadcast but not yet confirmed in this panel — track it on BscScan: https://bscscan.com/tx/' + txHash, 'warn');
+                dlStatus.textContent = 'Swap broadcast — awaiting on-chain confirmation';
+                showCursor();
+              }
+              return;
+            }
+            if (receipt.status === '0x1') {
+              var planNow = validatedPlan || { destLabel: DEFAULT_DEST, amount: 0, planRef: '' };
+              swapState = 'confirmed';
+              addLine('SWAP', 'Swap confirmed on BSC — MUSDV → BNB settled to the signing wallet (block ' + parseInt(receipt.blockNumber, 16) + ')', 'pass');
+              addLine('FOUND', 'Transfer to Found directed — delivery to ' + planNow.destLabel + ': BNB → USD off-ramp, then a USD push of ' + usd.format(planNow.amount) + ' to the Found bank account.');
+              addLine('FOUND', 'The bank leg settles through the Found receiver\'s own banking — it is not an on-chain transfer, and Found has no BSC address.');
+              addLine('BOOT', 'Terminal standing by. The Square invoice record and the internal forward to the OUTTHEFREEZER Limited Found account follow per this flow\'s accounting.');
+              txTitle.textContent = 'Swap confirmed — delivery to Found directed.';
+              dlDest.textContent = planNow.destLabel;
+              dlAmount.textContent = usd.format(planNow.amount) + ' · ' + num.format(planNow.amount) + ' MUSDV swapped';
+              dlStatus.textContent = 'Swap confirmed — off-ramp to Found directed';
+              deliveryLines.hidden = false;
+              updateSignUI();
+              showCursor();
+            } else {
+              swapState = 'failed';
+              addLine('SWAP', 'Swap transaction reverted on-chain — no delivery to Found was directed. Hash: ' + txHash, 'warn');
+              txTitle.textContent = 'Swap reverted on-chain — nothing was delivered.';
+              signing = false;
+              signBtn.textContent = 'Sign swap in wallet';
+              updateSignUI();
+              showCursor();
+            }
+          }).catch(function () {
+            if (attemptsLeft > 0) setTimeout(function () { pollSwapReceipt(p, txHash, attemptsLeft - 1); }, 4000);
+          });
+        }
+
+        document.getElementById('sign-form').addEventListener('submit', function (e) {
+          e.preventDefault();
+          if (signing) return;
+          if (!validatedPlan) { addLine('SIGN', 'No validated plan — run the dry run first.', 'warn'); return; }
+          if (!connectedAccount) { addLine('SIGN', 'No wallet connected — press "Connect wallet" first.', 'warn'); return; }
+          if (connectedAccount.toLowerCase() !== TRUST_A_ADDRESS.toLowerCase()) {
+            addLine('SIGN', 'Verification failed — the connected wallet does not control SettleMint Trust A. The swap is locked; connect the Trust A wallet to sign.', 'warn');
+            return;
+          }
+          var p = getProvider();
+          if (!p) { addLine('SIGN', 'Wallet provider is no longer available — reconnect and try again.', 'warn'); return; }
+
+          signing = true;
+          swapState = 'awaiting';
+          updateSignUI();
+          signBtn.textContent = 'Waiting for wallet…';
+          hideCursor();
+          addLine('', '———————————————————————————————');
+          addLine('SIGN', 'Terminal directing the transaction for plan ' + validatedPlan.planRef + ' — signature happens in your wallet.');
+          addLine('CONNECT', 'Verified signer: SettleMint Trust A — ' + connectedAccount, 'pass');
+          addLine('SWAP', 'Swap: ' + num.format(validatedPlan.amount) + ' MUSDV → BNB on BSC · path MUSDV → BSC-USD → WBNB · BNB settles to the signing wallet');
+          addLine('SWAP', 'Backing: Allowance Holder balance — the aggregated CBB3 Hex bonded collateral (incl. BTC3 / BTC3.0), connected to the CBB3 securities');
+          addLine('SWAP', 'Backing: 721 NFT — SCBMSCBB3 M Silver Tiger · ERC721-C · ' + NFT_721_CONTRACT);
+          addLine('FOUND', 'After the swap confirms: BNB → USD off-ramp, then USD push to ' + validatedPlan.destLabel + ' (Found bank account).');
+          addLine('SIGN', 'Review the amounts in your wallet\'s confirmation — that approval is what signs and broadcasts the swap.', 'warn');
+
+          var amountStr = String(validatedPlan.amount);
+          ensureBsc().then(function () {
+            addLine('SWAP', 'Checking the router\'s MUSDV spending approval for this wallet…');
+            return p.request({
+              method: 'eth_call',
+              params: [{ to: MUSDV_BSC_CONTRACT, data: buildAllowanceData(connectedAccount, SWAP_ROUTER) }, 'latest']
+            });
+          }).then(function (allowHex) {
+            var allowed = BigInt(allowHex || '0x0');
+            var needed = amountToWei(amountStr);
+            if (allowed >= needed) {
+              addLine('SWAP', 'Router approval already covers this amount — proceeding straight to the swap.', 'pass');
+              return null;
+            }
+            addLine('SWAP', 'Router approval needed — your wallet will ask you to approve MUSDV spending for the swap router first. This approval is not the swap.', 'warn');
+            signBtn.textContent = 'Approve in wallet…';
+            return p.request({
+              method: 'eth_sendTransaction',
+              params: [{ from: connectedAccount, to: MUSDV_BSC_CONTRACT, value: '0x0', data: buildApproveData(SWAP_ROUTER, amountStr), chainId: BSC_CHAIN_ID }]
+            }).then(function (approveHash) {
+              addLine('SWAP', 'Approval broadcast — hash: ' + approveHash + ' · waiting for it to confirm before the swap…');
+              return new Promise(function (resolve, reject) {
+                var tries = 30;
+                (function waitApprove() {
+                  p.request({ method: 'eth_getTransactionReceipt', params: [approveHash] }).then(function (r) {
+                    if (r) {
+                      if (r.status === '0x1') { addLine('SWAP', 'Approval confirmed.', 'pass'); resolve(); }
+                      else reject(new Error('the MUSDV approval transaction reverted'));
+                      return;
+                    }
+                    if (--tries <= 0) { reject(new Error('approval not confirmed in time — approve again, then sign the swap')); return; }
+                    setTimeout(waitApprove, 4000);
+                  }).catch(function () {
+                    if (--tries <= 0) { reject(new Error('approval status could not be read')); return; }
+                    setTimeout(waitApprove, 4000);
+                  });
+                })();
+              });
+            });
+          }).then(function () {
+            addLine('SWAP', 'Opening the swap for your signature — confirm it in your wallet.');
+            signBtn.textContent = 'Sign swap in wallet…';
+            return p.request({
+              method: 'eth_sendTransaction',
+              params: [{ from: connectedAccount, to: SWAP_ROUTER, value: '0x0', data: buildSwapData(amountStr, connectedAccount), chainId: BSC_CHAIN_ID }]
+            });
+          }).then(function (txHash) {
+            swapHash = txHash;
+            swapState = 'broadcast';
+            addLine('TX', 'Swap broadcast — hash: ' + txHash, 'pass');
+            addLine('TX', 'Verify it on BscScan: https://bscscan.com/tx/' + txHash);
+            addLine('SWAP', 'Waiting for the swap to confirm on BSC before directing the delivery to Found…');
+            txTitle.textContent = 'Swap broadcast — signed in your wallet. Confirming on BSC…';
+            txHashEl.textContent = txHash;
+            txLink.href = 'https://bscscan.com/tx/' + txHash;
+            txNote.textContent = num.format(validatedPlan.amount) + ' MUSDV → BNB · plan ' + validatedPlan.planRef + ' · backed by Allowance Holder / 721 NFT';
+            dlDest.textContent = validatedPlan.destLabel;
+            dlAmount.textContent = usd.format(validatedPlan.amount) + ' · ' + num.format(validatedPlan.amount) + ' MUSDV swapped';
+            dlStatus.textContent = 'Swap broadcast — awaiting on-chain confirmation';
+            deliveryLines.hidden = false;
+            txResult.classList.add('show');
+            signing = false;
+            signBtn.textContent = 'Swap broadcast — confirming…';
+            updateSignUI();
+            pollSwapReceipt(p, txHash, 45);
+          }).catch(function (err) {
+            addLine('SIGN', 'Signing not completed — nothing further was broadcast by this attempt: ' + (err && err.message ? err.message : 'request rejected in wallet'), 'warn');
+            swapState = 'failed';
+            signing = false;
+            signBtn.textContent = 'Sign swap in wallet';
+            updateSignUI();
+            showCursor();
+          });
+        });
+
+        resetBtn.addEventListener('click', function () {
+          timers.forEach(clearTimeout);
+          timers = [];
+          running = false;
+          runBtn.disabled = false;
+          runBtn.textContent = 'Run dry run';
+          copyBtn.disabled = true;
+          dlBtn.disabled = true;
+          resultsEl.classList.remove('show');
+          amountInput.value = '750';
+          amountInput.classList.remove('invalid');
+          amountError.classList.remove('show');
+          destMode.value = 'none';
+          destFile.value = '';
+          destFile.classList.remove('invalid');
+          destError.classList.remove('show');
+          validatedPlan = null;
+          swapState = 'idle';
+          swapHash = null;
+          signing = false;
+          connecting = false;
+          walletFallback.classList.remove('show');
+          walletStatusEl.classList.remove('connecting');
+          txResult.classList.remove('show');
+          deliveryLines.hidden = true;
+          signBtn.textContent = 'Sign swap in wallet';
+          updateDestUI();
+          updateSignUI();
+          resetStages();
+          boot();
+          updateSignUI();
+        });
+
+        copyBtn.addEventListener('click', function () {
+          var text = logLines.join('\n');
+          function done() {
+            copyBtn.textContent = 'Copied';
+            setTimeout(function () { copyBtn.textContent = 'Copy log'; }, 1600);
+          }
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(done, done);
+          } else { done(); }
+        });
+
+        dlBtn.addEventListener('click', function () {
+          var blob = new Blob([logLines.join('\n')], { type: 'text/plain' });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = 'iotfzxx-dry-run-log.txt';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+        });
+
+        updateDestUI();
+        boot();
+        updateSignUI();
+      })();
+    </script>
+  </body>
+</html>
