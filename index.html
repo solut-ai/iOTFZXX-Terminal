@@ -286,16 +286,39 @@
       .wallet-fallback li { margin: 3px 0; }
       .btn-connect { background: var(--deep); color: #fff; }
       .btn-connect:hover { filter: brightness(1.2); }
-      .btn-sign { background: var(--gold); color: #231a00; flex: 1 1 auto; }
-      .btn-sign:hover { filter: brightness(1.05); }
-      .btn-sign:disabled, .btn-connect:disabled { opacity: .5; cursor: not-allowed; }
-      .btn-switch { background: var(--surface-2); color: var(--gold-text); border-color: var(--gold-text); }
-      .btn-switch:hover { background: var(--gold-soft); }
-      .btn-switch:disabled { opacity: .5; cursor: not-allowed; }
-      .switch-status { display: none; font-size: 13px; line-height: 1.5; margin: 10px 0 0; }
-      .switch-status.show { display: block; }
-      .switch-status.ok { color: var(--green); font-weight: 600; }
-      .switch-status.warn { color: var(--amber); font-weight: 600; }
+      .btn-approve { background: var(--green); color: #fff; }
+      .btn-approve:hover { filter: brightness(1.07); }
+      .btn-exec { background: var(--gold); color: #231a00; flex: 1 1 auto; }
+      .btn-exec:hover { filter: brightness(1.05); }
+      .btn-approve:disabled, .btn-exec:disabled, .btn-connect:disabled { opacity: .5; cursor: not-allowed; }
+      .scope-box {
+        border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2);
+        padding: 13px 14px; margin-bottom: 15px;
+      }
+      .scope-box .sc-head {
+        font-family: "IBM Plex Mono", monospace; font-size: 11.5px; font-weight: 600;
+        letter-spacing: .08em; color: var(--gold-text); margin-bottom: 8px;
+      }
+      .scope-box ul { margin: 0 0 9px; padding-left: 18px; font-size: 13px; line-height: 1.6; }
+      .scope-box ul .mono { font-family: "IBM Plex Mono", monospace; font-size: 12px; overflow-wrap: anywhere; }
+      .scope-box p { margin: 0; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+      .approval-record, .exec-box {
+        display: none; margin-top: 15px; border-radius: 10px; padding: 13px 14px;
+        font-size: 13px; line-height: 1.55;
+      }
+      .approval-record { border: 1px solid var(--green); background: var(--green-soft); }
+      .exec-box { border: 1px solid var(--gold-text); background: var(--gold-soft); }
+      .approval-record.show, .exec-box.show { display: block; }
+      .approval-record .mono, .exec-box .mono { font-family: "IBM Plex Mono", monospace; font-size: 12px; overflow-wrap: anywhere; }
+      .kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; padding: 2px 0; }
+      .kv .k { color: var(--muted); font-weight: 600; flex: 0 0 auto; }
+      .kv .v { font-family: "IBM Plex Mono", monospace; font-size: 12px; text-align: right; overflow-wrap: anywhere; }
+      .report-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+      .report-row input {
+        flex: 1 1 260px; font: inherit; font-family: "IBM Plex Mono", monospace; font-size: 13px;
+        color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 9px; padding: 10px 12px;
+      }
+      .report-status { font-size: 12.5px; line-height: 1.5; margin: 10px 0 0; }
       .sign-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
       .tx-result {
         display: none; margin-top: 15px; border: 1px solid var(--green); background: var(--green-soft);
@@ -307,6 +330,8 @@
       .sign-note { font-size: 12.5px; color: var(--muted); line-height: 1.5; margin: 12px 0 0; }
       .console .tag.connect { color: #ffd700; }
       .console .tag.sign { color: #7fd08a; }
+      .console .tag.approve { color: #7fd08a; }
+      .console .tag.engine { color: #ffd700; }
       .console .tag.tx { color: #8ec9ef; }
       .console .tag.swap { color: #c39bf0; }
       .console .tag.found { color: #7fd08a; }
@@ -361,7 +386,7 @@
       </header>
 
       <div class="guardrail" role="note">
-        <div><strong>Two steps, in order.</strong> The dry run validates the full settlement plan on screen and signs nothing. The Connect &amp; Sign step below it is the <strong>live, terminal-directed transaction</strong>: once a dry run passes, you connect the wallet that controls SettleMint Trust A, the terminal verifies that wallet and the BSC network, then directs an <strong>MUSDV → BNB swap backed by the Allowance Holder balance and the 721 NFT</strong> for you to sign in your wallet — and, once the swap confirms, directs the delivery to Found. No secret key or key material is ever held in this page; signing happens only in your wallet, and your wallet's own confirmation is the final check before anything is sent.</div>
+        <div><strong>Two steps, in order.</strong> The dry run validates the full settlement plan on screen and signs nothing. The Connect &amp; Sign step below it runs the <strong>live transaction by ThirdWeb approve-and-execute</strong>: you connect the wallet that controls SettleMint Trust A and approve a <strong>session key scoped to the MUSDV contract and the swap router only</strong> — your wallet stays on its current network and is never asked to switch — then the <strong>ThirdWeb Engine server wallet (project SLVR8)</strong> executes the <strong>MUSDV → BNB swap on BSC</strong> on your behalf, backed by the Allowance Holder balance and the 721 NFT, and delivery to Found follows once the swap confirms. This page holds no Engine secret key or vault token and broadcasts nothing itself; the swap hash it shows is the one the Engine reports back.</div>
       </div>
 
       <div class="grid">
@@ -431,11 +456,12 @@
               <div><dt>Operating dept.</dt><dd>Blessed Phoenix Trust Co.</dd></div>
               <div><dt>Trust</dt><dd>Ambassadors In Love Holdings</dd></div>
               <div><dt>Source account</dt><dd>SettleMint Trust A</dd></div>
-              <div><dt>Network</dt><dd>BSC · ThirdWeb</dd></div>
+              <div><dt>Execution chain</dt><dd>BSC · ThirdWeb Engine</dd></div>
               <div><dt>Route</dt><dd>Treasury → Trust → Terminal → Found</dd></div>
               <div><dt>Destination hook</dt><dd id="fact-hook">MKMANAGEMENT default</dd></div>
               <div><dt>ThirdWeb client</dt><dd>MAP · dbc43f4d…0cd6ea99</dd></div>
-              <div><dt>Expected signer</dt><dd>Trust A · 0x68a07C…8746F2</dd></div>
+              <div><dt>Smart wallet</dt><dd>Trust A · 0x68a07C…8746F2</dd></div>
+              <div><dt>Executor</dt><dd>Engine server wallet · SLVR8</dd></div>
               <div><dt>MUSDV contract (BSC)</dt><dd>0x603d76…Ca50eAA</dd></div>
             </dl>
           </section>
@@ -518,14 +544,15 @@
           </section>
 
           <section class="card sign-card" aria-labelledby="sign-h">
-            <h2 id="sign-h">Connect &amp; Sign — terminal-directed transaction</h2>
-            <p class="sub">The MAP secure flow, directed by this terminal. It unlocks only after a dry run passes, so the swap you sign is for the amount that was validated. Connect the wallet that controls SettleMint Trust A — the terminal verifies the wallet and the BSC network before it will build the swap (the wallet needs a little BNB on BSC for gas).</p>
+            <h2 id="sign-h">Connect &amp; Sign — approve &amp; execute</h2>
+            <p class="sub">The ThirdWeb approve-and-execute flow, directed by this terminal. It unlocks only after a dry run passes, so the swap is for the amount that was validated. Your wallet stays on the network it is already on — the terminal never reads or enforces the chain and never asks for a network switch. You connect and approve a session key here; the ThirdWeb Engine server wallet (project SLVR8) executes the BSC swap for you, so the wallet never signs the BSC call directly.</p>
 
             <ol class="sign-steps">
               <li id="ss-plan"><span class="sn">1</span><span class="st">Dry run passes — plan validated</span><span class="chip" id="ss-plan-chip">Waiting</span></li>
-              <li id="ss-wallet"><span class="sn">2</span><span class="st">Connect &amp; verify — Trust A wallet on BSC</span><span class="chip" id="ss-wallet-chip">Not connected</span></li>
-              <li id="ss-swap"><span class="sn">3</span><span class="st">Swap — MUSDV → BNB, backed by Allowance Holder / 721 NFT</span><span class="chip" id="ss-swap-chip">Pending</span></li>
-              <li id="ss-found"><span class="sn">4</span><span class="st">Transfer to Found — BNB → USD → Found bank</span><span class="chip" id="ss-found-chip">Pending</span></li>
+              <li id="ss-wallet"><span class="sn">2</span><span class="st">Connect &amp; verify — wallet controls SettleMint Trust A (any network)</span><span class="chip" id="ss-wallet-chip">Not connected</span></li>
+              <li id="ss-approve"><span class="sn">3</span><span class="st">Approve session key — MUSDV contract + swap router only</span><span class="chip" id="ss-approve-chip">Pending</span></li>
+              <li id="ss-engine"><span class="sn">4</span><span class="st">Execute — Engine server wallet (SLVR8) runs the MUSDV → BNB swap on BSC</span><span class="chip" id="ss-engine-chip">Locked</span></li>
+              <li id="ss-found"><span class="sn">5</span><span class="st">Transfer to Found — BNB → USD → Found bank</span><span class="chip" id="ss-found-chip">Pending</span></li>
             </ol>
 
             <div class="backing-box" role="note" aria-label="Swap backing">
@@ -547,37 +574,60 @@
             </div>
 
             <div class="wallet-status" id="wallet-status" role="status">
-              <span id="wallet-status-text">No wallet connected. Connect with the wallet that controls SettleMint Trust A — <span class="addr">0x68a07C8d123fadd65cd76089b5684359b38746F2</span>.</span>
+              <span id="wallet-status-text">No wallet connected. Connect with the wallet that controls SettleMint Trust A — <span class="addr">0x68a07C8d123fadd65cd76089b5684359b38746F2</span>. Your wallet can stay on its current network; no switch is requested.</span>
             </div>
 
             <form id="sign-form" novalidate>
               <div class="field">
-                <label for="sign-summary">Swap to sign — directed by the terminal</label>
+                <label for="sign-summary">Swap to execute — directed by the terminal, executed by the Engine</label>
                 <input id="sign-summary" class="mono" type="text" value="Run a dry run first — the validated swap appears here" readonly tabindex="-1" />
-                <div class="hint">MUSDV on BSC · contract 0x603d76648738EB6210b969f452BCFedDACa50eAA · 18 decimals · chain BSC (56) · path MUSDV → BSC-USD → WBNB, settled as BNB to the signing wallet. Backed by the Allowance Holder balance and the SCBMSCBB3 M Silver Tiger 721 NFT shown above. Found is the fiat destination at the end of this flow — it has no BSC address, and no on-chain transfer is made to it.</div>
+                <div class="hint">MUSDV on BSC · contract 0x603d76648738EB6210b969f452BCFedDACa50eAA · 18 decimals · route MUSDV → BSC-USD → WBNB, settled as BNB to the SettleMint Trust A smart wallet · calldata selector 0x18cbafe5. Backed by the Allowance Holder balance and the SCBMSCBB3 M Silver Tiger 721 NFT shown above. Found is the fiat destination at the end of this flow — it has no BSC address, and no on-chain transfer is made to it.</div>
+              </div>
+
+              <div class="scope-box" role="note" aria-label="Session key scope">
+                <div class="sc-head">SESSION KEY SCOPE — approvedTargets · ONLY THESE TWO CONTRACTS</div>
+                <ul>
+                  <li>MUSDV contract (BSC) — <span class="mono">0x603d76648738EB6210b969f452BCFedDACa50eAA</span></li>
+                  <li>Swap router — PancakeSwap V2 Router02 (BSC) — <span class="mono">0x10ED43C718714eb63d5aA57B78B54704E256024E</span></li>
+                </ul>
+                <p>The wildcard <strong>"*"</strong> is never approved, and no other target is in scope. The key may make one call — <strong>swapExactTokensForETH</strong>, selector <strong>0x18cbafe5</strong>, route MUSDV → BSC-USD → WBNB — and it is exercised by the <strong>ThirdWeb Engine server wallet (project SLVR8, the relay sender)</strong> acting for the Trust A smart wallet. Approving records the approval in this panel; it does not move funds.</p>
               </div>
 
               <div class="sign-actions">
                 <button type="button" class="btn btn-connect" id="connect-btn">Connect wallet</button>
-                <button type="button" class="btn btn-switch" id="switch-bsc-btn" disabled>Switch to BSC</button>
-                <button type="submit" class="btn btn-sign" id="sign-btn" disabled>Sign swap in wallet</button>
+                <button type="button" class="btn btn-approve" id="approve-btn" disabled>Approve session key</button>
+                <button type="button" class="btn btn-exec" id="exec-btn" disabled>Execute via Engine (SLVR8)</button>
                 <button type="button" class="btn btn-ghost" id="disconnect-btn" hidden>Disconnect</button>
               </div>
-              <p class="switch-status" id="switch-status" role="status"></p>
             </form>
 
             <div class="wallet-fallback" id="wallet-fallback" role="alert" tabindex="-1">
               <strong>Connection started — no wallet answered.</strong> The terminal searched this page for a wallet provider and none responded, so there was nothing to open a wallet prompt. This page is often opened inside another app's embedded view, and wallet extensions and wallet apps cannot inject into an embedded page — when that happens, Connect has no wallet to talk to here, however many times it is pressed.
               <ol>
                 <li>Open this terminal directly in your wallet's own browser (the browser inside the wallet app you use with ThirdWeb / MAP), or in a desktop browser with that wallet's extension enabled.</li>
-                <li>Unlock the wallet and make sure the account that controls SettleMint Trust A is selected.</li>
+                <li>Unlock the wallet and make sure the account that controls SettleMint Trust A is selected. Your wallet can stay on its current network — no network switch is needed or requested.</li>
                 <li>Come back to this panel and press <strong>Check for wallet again</strong> — the terminal will search again and open the connection request in your wallet.</li>
               </ol>
               <button type="button" class="btn btn-connect" id="retry-connect-btn">Check for wallet again</button>
             </div>
 
+            <div class="approval-record" id="appr-record" role="status">
+              <div><strong>Session key approved — recorded in this terminal.</strong></div>
+              <div id="appr-detail"></div>
+            </div>
+
+            <div class="exec-box" id="exec-box" role="status">
+              <div><strong>Execution handed to the ThirdWeb Engine server wallet (project SLVR8).</strong> The Engine executes this swap on BSC for the Trust A smart wallet. This page holds no Engine secret key or vault token and broadcasts nothing itself — the hash below is shown only when the Engine reports it back.</div>
+              <div id="exec-detail" style="margin-top:9px;"></div>
+              <div class="report-row">
+                <input id="engine-hash" type="text" placeholder="BSC swap hash — as reported by the Engine (0x…)" aria-label="BSC swap hash as reported by the Engine" />
+                <button type="button" class="btn btn-ghost" id="report-btn">Record Engine report</button>
+              </div>
+              <p class="report-status" id="report-status">Awaiting the Engine's report — when the Engine returns the BSC swap hash, record it here and the terminal will verify it on BSC and direct the delivery to Found.</p>
+            </div>
+
             <div class="tx-result" id="tx-result" role="status">
-              <div><strong id="tx-title">Swap broadcast — signed in your wallet.</strong></div>
+              <div><strong id="tx-title">Swap broadcast — executed by the Engine server wallet.</strong></div>
               <div class="hash" id="tx-hash"></div>
               <div><a id="tx-link" href="#" target="_blank" rel="noopener">View on BscScan</a> · <span id="tx-note"></span></div>
               <div class="delivery-lines" id="delivery-lines" hidden>
@@ -588,7 +638,7 @@
               </div>
             </div>
 
-            <p class="sign-note">Connect searches this page for your browser wallet provider (the same wallet you use with ThirdWeb / MAP Secure Connect, client <span style="font-family:'IBM Plex Mono',monospace;">dbc43f4d2bbd9ede24fe4b4a0cd6ea99</span>) and opens the connection request in it. If no wallet answers — for example, when this terminal is opened inside another app's embedded view, which a wallet cannot reach — the panel under the Connect button explains how to open the terminal in your wallet's browser instead. Signing runs a real swap from the connected wallet: if the swap router does not yet hold a spending approval for your MUSDV, your wallet will first ask you to approve it, then ask you to sign the swap itself. Check the amounts and network in each wallet confirmation before you approve. The BNB → USD off-ramp and the USD push to the Found bank account are directed by the terminal once the swap confirms on-chain; the bank leg settles through the Found receiver's own banking, not on BSC.</p>
+            <p class="sign-note">Connect searches this page for your browser wallet provider (the same wallet you use with ThirdWeb / MAP Secure Connect, client <span style="font-family:'IBM Plex Mono',monospace;">dbc43f4d2bbd9ede24fe4b4a0cd6ea99</span>) and opens the connection request in it. The terminal verifies only that the connected wallet controls SettleMint Trust A — it does not read the wallet's chain, does not enforce a network, and never requests a switch. Approving signs the session-key approval shown above in your wallet, scoped by approvedTargets to the MUSDV contract and the swap router only, and the approval is recorded in this panel. Execution is then handed to the ThirdWeb Engine server wallet (project SLVR8): the Engine sends the swap on BSC, and this terminal shows the resulting BSC swap hash and BscScan link once the Engine reports it — the page holds no Engine secret key or vault token and cannot run the Engine itself. The BNB → USD off-ramp and the USD push to the Found bank account are directed by the terminal once the reported swap confirms on-chain; the bank leg settles through the Found receiver's own banking, not on BSC. If no wallet answers — for example, when this terminal is opened inside another app's embedded view, which a wallet cannot reach — the panel under the Connect button explains how to open the terminal in your wallet's browser instead.</p>
           </section>
         </div>
       </div>
@@ -605,7 +655,6 @@
         var WBNB_CONTRACT = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
         var SWAP_ROUTER = '0x10ED43C718714eb63d5aA57B78B54704E256024E'; /* PancakeSwap V2 Router02, BSC */
         var NFT_721_CONTRACT = '0x1c258040aA56fc805De5659355a245f3FD7AD90f'; /* SCBMSCBB3 M Silver Tiger, ERC721-C */
-        var BSC_CHAIN_ID = '0x38'; /* 56 */
         var THIRDWEB_CLIENT_ID = 'dbc43f4d2bbd9ede24fe4b4a0cd6ea99';
         var consoleEl = document.getElementById('console');
         var runBtn = document.getElementById('run-btn');
@@ -628,9 +677,15 @@
         var retryConnectBtn = document.getElementById('retry-connect-btn');
         var walletFallback = document.getElementById('wallet-fallback');
         var walletStatusEl = document.getElementById('wallet-status');
-        var signBtn = document.getElementById('sign-btn');
-        var switchBtn = document.getElementById('switch-bsc-btn');
-        var switchStatus = document.getElementById('switch-status');
+        var approveBtn = document.getElementById('approve-btn');
+        var execBtn = document.getElementById('exec-btn');
+        var apprRecord = document.getElementById('appr-record');
+        var apprDetail = document.getElementById('appr-detail');
+        var execBox = document.getElementById('exec-box');
+        var execDetail = document.getElementById('exec-detail');
+        var engineHashInput = document.getElementById('engine-hash');
+        var reportBtn = document.getElementById('report-btn');
+        var reportStatus = document.getElementById('report-status');
         var disconnectBtn = document.getElementById('disconnect-btn');
         var signSummary = document.getElementById('sign-summary');
         var walletStatusText = document.getElementById('wallet-status-text');
@@ -653,14 +708,13 @@
         var timers = [];
         var validatedPlan = null; /* { amount, destLabel, planRef } — set only by a passing dry run */
         var connectedAccount = null;
-        var connectedChainId = null;
         var connecting = false;
-        var switching = false;
+        var approving = false;
         var activeProvider = null;
         var providerListenersFor = null;
-        var signing = false;
-        var swapState = 'idle'; /* idle | awaiting | broadcast | confirmed | failed */
-        var swapHash = null;
+        var sessionApproval = null; /* { account, planRef, amount, signature, time } — recorded in place by Approve */
+        var execState = 'locked'; /* locked | ready | handed | reported | confirmed | failed */
+        var swapHash = null; /* set only from the Engine's report — never generated in this page */
 
         var usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
         var num = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -704,6 +758,8 @@
           if (tag === 'HOOK') return 'hook';
           if (tag === 'CONNECT') return 'connect';
           if (tag === 'SIGN') return 'sign';
+          if (tag === 'APPROVE') return 'approve';
+          if (tag === 'ENGINE') return 'engine';
           if (tag === 'TX') return 'tx';
           if (tag === 'SWAP') return 'swap';
           if (tag === 'FOUND') return 'found';
@@ -748,17 +804,6 @@
           if (!a || a.length < 12) return a || '';
           return a.slice(0, 6) + '…' + a.slice(-4);
         }
-        function chainLabel(cid) {
-          if (!cid) return 'network not read yet';
-          var dec = parseInt(cid, 16);
-          if (isNaN(dec)) return 'chain ' + cid;
-          var names = {
-            1: 'Ethereum Mainnet', 56: 'BNB Smart Chain', 97: 'BNB Smart Chain Testnet',
-            137: 'Polygon', 10: 'Optimism', 42161: 'Arbitrum One', 8453: 'Base',
-            43114: 'Avalanche C-Chain'
-          };
-          return (names[dec] || 'Unrecognized network') + ' (chain ' + dec + ')';
-        }
         function isValidAddress(a) {
           return /^0x[0-9a-fA-F]{40}$/.test((a || '').trim());
         }
@@ -778,12 +823,27 @@
           return h;
         }
         function addrWord(a) { return pad32(a.trim().slice(2)); }
-        function buildApproveData(spender, amountStr) {
-          var wei = amountToWei(amountStr);
-          return '0x095ea7b3' + addrWord(spender) + pad32(wei.toString(16)); /* ERC-20 approve(address,uint256) */
+        function hexEncode(str) {
+          var bytes = new TextEncoder().encode(str);
+          var hex = '0x';
+          for (var i = 0; i < bytes.length; i++) hex += ('0' + bytes[i].toString(16)).slice(-2);
+          return hex;
         }
-        function buildAllowanceData(owner, spender) {
-          return '0xdd62ed3e' + addrWord(owner) + addrWord(spender); /* ERC-20 allowance(address,address) */
+        function buildApprovalMessage() {
+          var plan = validatedPlan || { amount: 0, planRef: '—', destLabel: DEFAULT_DEST };
+          return [
+            'iOTFZXX Terminal — session key approval (ThirdWeb approve-and-execute)',
+            'Smart wallet: ' + connectedAccount,
+            'Executor: ThirdWeb Engine server wallet — project SLVR8 (relay sender)',
+            'Execution chain: BNB Smart Chain (56), executed by the Engine. This wallet does not switch networks and does not sign the BSC call.',
+            'approvedTargets — only these two contracts:',
+            '1. MUSDV (BSC) ' + MUSDV_BSC_CONTRACT,
+            '2. Swap router — PancakeSwap V2 Router02 (BSC) ' + SWAP_ROUTER,
+            'Wildcard "*" is NOT approved. No other targets are approved.',
+            'Permitted call: swapExactTokensForETH — selector 0x18cbafe5',
+            'Swap: ' + num.format(plan.amount) + ' MUSDV → BSC-USD → WBNB, settled as BNB to the smart wallet',
+            'Plan: ' + plan.planRef + ' · Destination after confirmation: ' + plan.destLabel
+          ].join('\n');
         }
         function buildSwapData(amountStr, toAddress) {
           var wei = amountToWei(amountStr);
@@ -810,59 +870,81 @@
         function updateSignUI() {
           var planOk = !!validatedPlan;
           var isTrustA = !!connectedAccount && connectedAccount.toLowerCase() === TRUST_A_ADDRESS.toLowerCase();
-          var onBsc = connectedChainId === BSC_CHAIN_ID;
-          var walletOk = !!connectedAccount && isTrustA && onBsc;
+          var walletOk = !!connectedAccount && isTrustA;
+          var approved = !!(sessionApproval && planOk && connectedAccount &&
+            sessionApproval.account.toLowerCase() === connectedAccount.toLowerCase() &&
+            sessionApproval.planRef === validatedPlan.planRef);
           setStep('ss-plan', '1', planOk, planOk ? 'Pass · ' + validatedPlan.planRef : 'Waiting');
           setStep('ss-wallet', '2', walletOk,
             connecting ? 'Connecting…'
               : !connectedAccount ? 'Not connected'
-              : (!isTrustA ? 'Not Trust A — swap locked' : (!onBsc ? 'Wrong network — swap locked' : 'Verified · Trust A · BSC')));
-          setStep('ss-swap', '3', swapState === 'confirmed',
-            swapState === 'confirmed' ? 'Confirmed on BSC'
-              : swapState === 'broadcast' ? 'Broadcast — confirming…'
-              : swapState === 'awaiting' ? 'In wallet…'
-              : swapState === 'failed' ? 'Not completed'
+              : (isTrustA ? 'Verified · Trust A' : 'Not Trust A — execution locked'));
+          setStep('ss-approve', '3', approved,
+            approved ? 'Approved · recorded'
+              : approving ? 'In wallet…'
               : 'Pending');
-          setStep('ss-found', '4', swapState === 'confirmed',
-            swapState === 'confirmed' ? 'Directed to Found' : 'Pending');
+          setStep('ss-engine', '4', execState === 'confirmed',
+            execState === 'confirmed' ? 'Confirmed on BSC'
+              : execState === 'reported' ? 'Engine reported — confirming…'
+              : execState === 'handed' ? 'Handed to Engine — awaiting report'
+              : execState === 'failed' ? 'Not completed'
+              : approved ? 'Ready'
+              : 'Locked — approve first');
+          setStep('ss-found', '5', execState === 'confirmed',
+            execState === 'confirmed' ? 'Directed to Found' : 'Pending');
           if (planOk) {
-            signSummary.value = num.format(validatedPlan.amount) + ' MUSDV → BNB · BSC · backed by Allowance Holder / 721 NFT · plan ' + validatedPlan.planRef;
+            signSummary.value = num.format(validatedPlan.amount) + ' MUSDV → BNB · route MUSDV → BSC-USD → WBNB · router ' + shortAddr(SWAP_ROUTER) + ' · selector 0x18cbafe5 · executed by Engine (SLVR8) · plan ' + validatedPlan.planRef;
           } else {
             signSummary.value = 'Run a dry run first — the validated swap appears here';
           }
           if (!connectedAccount) {
             if (!connecting) {
-              walletStatusText.innerHTML = 'No wallet connected. Connect with the wallet that controls SettleMint Trust A — <span class="addr">' + TRUST_A_ADDRESS + '</span>.';
+              walletStatusText.innerHTML = 'No wallet connected. Connect with the wallet that controls SettleMint Trust A — <span class="addr">' + TRUST_A_ADDRESS + '</span>. Your wallet can stay on its current network; no switch is requested.';
             }
             connectBtn.textContent = connecting ? 'Connecting…' : 'Connect wallet';
             disconnectBtn.hidden = true;
           } else {
-            var netLine = !connectedChainId
-              ? '<span class="warn-line">Network: reading the wallet\'s current chain…</span>'
-              : onBsc
-                ? '<span class="ok-line">Network: ' + chainLabel(connectedChainId) + ' ✓</span>'
-                : '<span class="warn-line">Network: ' + chainLabel(connectedChainId) + ' — wrong network. The swap is locked until the wallet is on BNB Smart Chain (chain 56). Tap “Switch to BSC” below to switch.</span>';
-            walletStatusText.innerHTML = 'Connected: <span class="addr">' + connectedAccount + '</span><br />' + netLine + '<br />' +
+            walletStatusText.innerHTML = 'Connected: <span class="addr">' + connectedAccount + '</span><br />' +
               (isTrustA
-                ? '<span class="ok-line">Verified — this wallet controls SettleMint Trust A, the signer for this flow ✓</span>'
-                : '<span class="warn-line">Verification failed — this wallet does not control SettleMint Trust A (' + shortAddr(TRUST_A_ADDRESS) + '). The swap stays locked until the Trust A wallet is connected.</span>');
+                ? '<span class="ok-line">Verified — this wallet controls SettleMint Trust A, the smart wallet for this flow ✓</span>'
+                : '<span class="warn-line">Verification failed — this wallet does not control SettleMint Trust A (' + shortAddr(TRUST_A_ADDRESS) + '). Execution stays locked until the Trust A wallet is connected.</span>') +
+              '<br />Network: not checked and never switched — your wallet stays on its current network. The Engine server wallet executes the swap on BSC.';
             connectBtn.textContent = 'Wallet connected';
             disconnectBtn.hidden = false;
           }
-          signBtn.disabled = !(planOk && walletOk) || signing || swapState === 'broadcast' || swapState === 'confirmed';
-          connectBtn.disabled = !!connectedAccount || signing || connecting;
-          switchBtn.disabled = !connectedAccount || connecting || signing || switching;
-          switchBtn.textContent = switching ? 'Switching…' : 'Switch to BSC';
+          if (approved) {
+            apprRecord.classList.add('show');
+            apprDetail.innerHTML = 'Smart wallet: <span class="mono">' + sessionApproval.account + '</span><br />' +
+              'approvedTargets: MUSDV <span class="mono">' + shortAddr(MUSDV_BSC_CONTRACT) + '</span> + swap router <span class="mono">' + shortAddr(SWAP_ROUTER) + '</span> only — never "*"<br />' +
+              'Recorded ' + sessionApproval.time + ' · plan ' + sessionApproval.planRef + ' · approval signature <span class="mono">' + sessionApproval.signature.slice(0, 18) + '…</span>';
+          } else {
+            apprRecord.classList.remove('show');
+          }
+          approveBtn.disabled = !(planOk && walletOk) || approved || approving || connecting;
+          approveBtn.textContent = approving ? 'Approve in wallet…' : (approved ? 'Session key approved ✓' : 'Approve session key');
+          execBtn.disabled = !(planOk && walletOk && approved) || execState === 'handed' || execState === 'reported' || execState === 'confirmed';
+          execBtn.textContent = execState === 'confirmed' ? 'Executed — confirmed on BSC'
+            : execState === 'reported' ? 'Engine reported — confirming…'
+            : execState === 'handed' ? 'Handed to Engine — awaiting report'
+            : 'Execute via Engine (SLVR8)';
+          connectBtn.disabled = !!connectedAccount || connecting || approving;
+        }
+        function clearExecState() {
+          sessionApproval = null;
+          execState = 'locked';
+          swapHash = null;
+          txResult.classList.remove('show');
+          deliveryLines.hidden = true;
+          execBox.classList.remove('show');
+          apprRecord.classList.remove('show');
+          if (engineHashInput) engineHashInput.value = '';
+          if (reportStatus) reportStatus.textContent = 'Awaiting the Engine\'s report — when the Engine returns the BSC swap hash, record it here and the terminal will verify it on BSC and direct the delivery to Found.';
         }
         function invalidatePlan(reason) {
           if (!validatedPlan) { updateSignUI(); return; }
           validatedPlan = null;
-          swapState = 'idle';
-          swapHash = null;
-          txResult.classList.remove('show');
-          deliveryLines.hidden = true;
-          signBtn.textContent = 'Sign swap in wallet';
-          addLine('SIGN', 'Validated plan cleared — ' + reason + '. Run the dry run again before signing.');
+          clearExecState();
+          addLine('SIGN', 'Validated plan cleared — ' + reason + '. Run the dry run again before approving.');
           updateSignUI();
         }
 
@@ -891,7 +973,7 @@
           addLine('BOOT', 'Mode: DRY RUN first · Connect & Sign LIVE after validation · no key material in this panel');
           addLine('BOOT', 'Trust accounts: SettleMint Trust A (source) · bWallet Trust B');
           addLine('HOOK', 'Destination hook armed — destination follows the lending file; MKMANAGEMENT default when none is shared');
-          addLine('SIGN', 'Directed transaction armed — ThirdWeb / MAP wallet connect (client ' + THIRDWEB_CLIENT_ID.slice(0, 8) + '…); verifies the Trust A wallet on BSC, then directs the MUSDV → BNB swap backed by the Allowance Holder balance and the 721 NFT; delivery to Found follows the swap');
+          addLine('SIGN', 'Approve-and-execute armed — ThirdWeb / MAP wallet connect (client ' + THIRDWEB_CLIENT_ID.slice(0, 8) + '…); verifies the Trust A wallet only (no chain check, no network switch), records the session-key approval scoped to the MUSDV contract and the swap router, then hands execution to the Engine server wallet (SLVR8), which executes the MUSDV → BNB swap on BSC; delivery to Found follows the confirmed swap');
           addLine('BOOT', 'Session ready. Configure the run and press "Run dry run".');
           showCursor();
         }
@@ -929,7 +1011,7 @@
               ['CHECK', 'Source identified: SettleMint Trust A (treasury → trust)'],
               ['CHECK', 'Verified balance on record: 251,751.94627 MUSDV — placement tx 0x42f95b…39dfca, BSC block 130569946'],
               ['CHECK', 'Coverage check: ' + musdv + ' required against 251,751.94627 MUSDV available', 'pass'],
-              ['SIM', 'Trust signature simulated in the dry run — the real signature is provided in the Connect & Sign step below, in your wallet; no key material is held in this panel', 'warn']
+              ['SIM', 'Trust authorization simulated in the dry run — the real session-key approval is given in the Connect & Sign step below, in your wallet; no key material is held in this panel', 'warn']
             ]},
             { stage: 4, banner: 'STAGE 4 / 6 — TERMINAL CONVERSION (AUTOMATED)', lines: [
               ['CHECK', 'ThirdWeb session reachable — settlement API responding', 'pass'],
@@ -996,11 +1078,7 @@
           }
 
           validatedPlan = null;
-          swapState = 'idle';
-          swapHash = null;
-          txResult.classList.remove('show');
-          deliveryLines.hidden = true;
-          signBtn.textContent = 'Sign swap in wallet';
+          clearExecState();
           updateSignUI();
           var planRef = 'DR-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + Math.floor(1000 + Math.random() * 9000);
           var script = buildScript(amount, dest, planRef);
@@ -1035,9 +1113,8 @@
             consoleEl.appendChild(done);
             addLine('BOOT', 'Transactions broadcast: 0 · Funds moved: $0.00 · Invoices sent: 0');
             validatedPlan = { amount: amount, destLabel: dest.label, planRef: planRef };
-            swapState = 'idle';
-            swapHash = null;
-            addLine('SIGN', 'Directed transaction unlocked for plan ' + planRef + ' — connect and verify the Trust A wallet below to sign the validated MUSDV → BNB swap, backed by the Allowance Holder balance and the 721 NFT.');
+            clearExecState();
+            addLine('SIGN', 'Directed transaction unlocked for plan ' + planRef + ' — connect and verify the Trust A wallet below, approve the session key (MUSDV contract + swap router only), and the Engine server wallet (SLVR8) executes the validated MUSDV → BNB swap on BSC, backed by the Allowance Holder balance and the 721 NFT.');
             addLine('BOOT', 'Terminal standing by. The dry run sent nothing; signing is a separate, live step in your wallet.');
             showCursor();
             document.getElementById('r-status').textContent = 'VALIDATED';
@@ -1046,7 +1123,7 @@
             rDest.textContent = dest.isDefault
               ? 'Destination resolution: default hook → ' + dest.label + ' — no destination accounting was shared with the lending file.'
               : 'Destination resolution: lending-file accounting → ' + dest.label + ' — default hook stood down.';
-            document.getElementById('r-next').innerHTML = '<strong>Next step — Connect &amp; Sign below.</strong> ' + esc('Connect the wallet that controls SettleMint Trust A; the terminal verifies it on BSC, then directs the MUSDV → BNB swap for this validated amount — backed by the Allowance Holder balance and the 721 NFT — and, once the swap confirms, directs the delivery to ' + dest.label + '. This test counts toward the full $250,000 delivery — ' + usd.format(250000 - amount) + ' remains to complete the invoice requirement.');
+            document.getElementById('r-next').innerHTML = '<strong>Next step — Connect &amp; Sign below.</strong> ' + esc('Connect the wallet that controls SettleMint Trust A, approve the session key scoped to the MUSDV contract and the swap router only, and the ThirdWeb Engine server wallet (SLVR8) executes the MUSDV → BNB swap on BSC for this validated amount — backed by the Allowance Holder balance and the 721 NFT — and, once the Engine reports the swap and it confirms, the terminal directs the delivery to ' + dest.label + '. This test counts toward the full $250,000 delivery — ' + usd.format(250000 - amount) + ' remains to complete the invoice requirement.');
             updateSignUI();
             resultsEl.classList.add('show');
             copyBtn.disabled = false;
@@ -1145,67 +1222,16 @@
           if (!p || providerListenersFor === p || typeof p.on !== 'function') return;
           providerListenersFor = p;
           p.on('accountsChanged', function (accounts) {
-            connectedAccount = (accounts && accounts.length) ? accounts[0] : null;
+            var next = (accounts && accounts.length) ? accounts[0] : null;
+            if (next !== connectedAccount && sessionApproval) {
+              clearExecState();
+              addLine('APPROVE', 'Wallet account changed — the recorded session-key approval was cleared; approve again for the connected account.');
+            }
+            connectedAccount = next;
             addLine('CONNECT', connectedAccount ? 'Wallet account changed: ' + connectedAccount : 'Wallet disconnected.');
-            refreshChain();
-            updateSignUI();
-          });
-          p.on('chainChanged', function (cid) {
-            connectedChainId = cid;
-            addLine('CONNECT', 'Network changed: ' + chainLabel(cid) + (cid === BSC_CHAIN_ID ? ' ✓' : ' — the swap is locked until the network is BNB Smart Chain (chain 56)'));
             updateSignUI();
           });
         }
-        function refreshChain() {
-          var p = getProvider();
-          if (!p || !connectedAccount) return Promise.resolve();
-          return p.request({ method: 'eth_chainId' }).then(function (cid) {
-            connectedChainId = cid;
-            updateSignUI();
-          }).catch(function () {});
-        }
-        /* Enforce BNB Smart Chain (56 / 0x38). Reads the wallet's live chain
-           first; if it is not BSC, requests wallet_switchEthereumChain. If
-           the wallet does not know BSC yet (error 4902), adds it with
-           wallet_addEthereumChain and requests the switch again. Resolves
-           only once the chain is confirmed as BSC — otherwise it rejects, so
-           callers keep the swap locked. */
-        function ensureBsc() {
-          var p = getProvider();
-          if (!p) return Promise.reject(new Error('no wallet provider available — reconnect the wallet and try again'));
-          function readChain() {
-            return p.request({ method: 'eth_chainId' }).then(function (cid) {
-              connectedChainId = cid;
-              return cid;
-            });
-          }
-          function requestSwitch() {
-            return p.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: BSC_CHAIN_ID }] });
-          }
-          return readChain().then(function (cid) {
-            if (cid === BSC_CHAIN_ID) { updateSignUI(); return; }
-            addLine('CONNECT', 'Wallet is on ' + chainLabel(cid) + ' — requesting a switch to BNB Smart Chain (chain 56) in your wallet…', 'warn');
-            return requestSwitch().catch(function (err) {
-              if (err && err.code === 4902) {
-                addLine('CONNECT', 'BNB Smart Chain is not configured in this wallet yet — adding it (chain 56 · BNB · bsc-dataseed.binance.org · BscScan), then requesting the switch again…');
-                return p.request({ method: 'wallet_addEthereumChain', params: [{
-                  chainId: BSC_CHAIN_ID, chainName: 'BNB Smart Chain',
-                  nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
-                  rpcUrls: ['https://bsc-dataseed.binance.org/'],
-                  blockExplorerUrls: ['https://bscscan.com']
-                }] }).then(function () { return requestSwitch(); });
-              }
-              throw err;
-            }).then(function () { return readChain(); }).then(function (cid2) {
-              if (cid2 !== BSC_CHAIN_ID) {
-                throw new Error('the wallet is still on ' + chainLabel(cid2) + ' — the swap stays locked until the network is BNB Smart Chain (chain 56)');
-              }
-              addLine('CONNECT', 'Network confirmed: BNB Smart Chain (chain 56) ✓', 'pass');
-              updateSignUI();
-            });
-          });
-        }
-
         function initiateConnect() {
           if (connecting || connectedAccount) return;
           connecting = true;
@@ -1236,30 +1262,11 @@
               connectedAccount = accounts[0];
               addLine('CONNECT', 'Wallet connected: ' + connectedAccount, 'pass');
               if (connectedAccount.toLowerCase() === TRUST_A_ADDRESS.toLowerCase()) {
-                addLine('CONNECT', 'Verified — connected wallet controls SettleMint Trust A, the signer for this flow ✓', 'pass');
+                addLine('CONNECT', 'Verified — connected wallet controls SettleMint Trust A, the smart wallet for this flow ✓', 'pass');
               } else {
-                addLine('CONNECT', 'Verification failed — connected wallet is not SettleMint Trust A (' + TRUST_A_ADDRESS + '). The swap stays locked until the Trust A wallet is connected.', 'warn');
+                addLine('CONNECT', 'Verification failed — connected wallet is not SettleMint Trust A (' + TRUST_A_ADDRESS + '). Execution stays locked until the Trust A wallet is connected.', 'warn');
               }
-              return refreshChain();
-            }).then(function () {
-              /* Connected — enforce BSC before anything can be signed. If the
-                 wallet landed on another network (e.g. Ethereum), request the
-                 switch now; a rejected or failed switch does not undo the
-                 connection, it just leaves the swap locked with the reason
-                 shown in the status area. */
-              if (connectedAccount && connectedChainId === BSC_CHAIN_ID) {
-                addLine('CONNECT', 'Network confirmed on connect: BNB Smart Chain (chain 56) ✓', 'pass');
-                return null;
-              }
-              if (!connectedAccount) return null;
-              addLine('CONNECT', 'Connected on ' + chainLabel(connectedChainId) + ' — this swap runs on BNB Smart Chain. Requesting the network switch now…', 'warn');
-              return ensureBsc().catch(function (err) {
-                var rejected = err && err.code === 4001;
-                addLine('CONNECT', rejected
-                  ? 'Network switch was rejected in the wallet — the swap stays locked until the network is BNB Smart Chain (chain 56). Tap "Switch to BSC" to try again.'
-                  : 'Automatic switch to BSC did not complete: ' + (err && err.message ? err.message : 'wallet error') + ' — the swap stays locked until the network is BNB Smart Chain (chain 56). Tap "Switch to BSC" to try again.', 'warn');
-              });
-            }).then(function () {
+              addLine('CONNECT', 'Network not read and not enforced — the wallet stays on its current network. The Engine server wallet executes on BSC; no switch is requested.');
               connecting = false;
               walletStatusEl.classList.remove('connecting');
               updateSignUI();
@@ -1283,47 +1290,9 @@
         connectBtn.addEventListener('click', initiateConnect);
         retryConnectBtn.addEventListener('click', initiateConnect);
 
-        /* Manual "Switch to BSC" — re-runs the same switch/add-chain flow as
-           the automatic post-connect switch, for when that switch did not
-           take or the user changed networks afterwards. The result is
-           reported in place, under the action buttons. */
-        function setSwitchStatus(text, kind) {
-          switchStatus.textContent = text;
-          switchStatus.className = 'switch-status show' + (kind ? ' ' + kind : '');
-        }
-        switchBtn.addEventListener('click', function () {
-          if (switching) return;
-          if (!connectedAccount || !getProvider()) {
-            setSwitchStatus('Connect a wallet first — the switch request is sent to the connected wallet.', 'warn');
-            return;
-          }
-          if (connectedChainId === BSC_CHAIN_ID) {
-            setSwitchStatus('Already on BNB Smart Chain (chain 56) ✓ — no switch needed.', 'ok');
-            return;
-          }
-          switching = true;
-          updateSignUI();
-          setSwitchStatus('Requesting the switch to BNB Smart Chain (chain 56) in your wallet — approve it there…', '');
-          addLine('CONNECT', 'Manual switch requested — asking the wallet to switch to BNB Smart Chain (chain 56)…');
-          ensureBsc().then(function () {
-            setSwitchStatus('Switched — the wallet is now on BNB Smart Chain (chain 56) ✓. The swap unlocks once the Trust A wallet and a validated plan are both in place.', 'ok');
-          }).catch(function (err) {
-            var rejected = err && err.code === 4001;
-            setSwitchStatus(rejected
-              ? 'The switch was rejected in the wallet. The swap stays locked until the network is BNB Smart Chain (chain 56) — tap Switch to BSC to try again.'
-              : 'Switch did not complete: ' + (err && err.message ? err.message : 'wallet error') + ' The swap stays locked until the network is BNB Smart Chain (chain 56).', 'warn');
-            addLine('CONNECT', 'Manual switch to BSC did not complete: ' + (err && err.message ? err.message : 'request rejected in wallet'), 'warn');
-          }).then(function () {
-            switching = false;
-            updateSignUI();
-          });
-        });
-
         disconnectBtn.addEventListener('click', function () {
           connectedAccount = null;
-          connectedChainId = null;
-          switchStatus.textContent = '';
-          switchStatus.className = 'switch-status';
+          clearExecState();
           addLine('CONNECT', 'Wallet disconnected in this panel. (This clears the page\'s view only; manage the site connection in your wallet as well.)');
           updateSignUI();
         });
@@ -1333,23 +1302,91 @@
         var bootProvider = getProvider();
         if (bootProvider) { activeProvider = bootProvider; attachProviderListeners(bootProvider); }
 
-        /* ---------- Sign the directed swap, then direct delivery to Found ---------- */
-        function pollSwapReceipt(p, txHash, attemptsLeft) {
-          p.request({ method: 'eth_getTransactionReceipt', params: [txHash] }).then(function (receipt) {
-            if (!receipt) {
-              if (attemptsLeft > 0) {
-                setTimeout(function () { pollSwapReceipt(p, txHash, attemptsLeft - 1); }, 4000);
-              } else {
-                addLine('SWAP', 'Swap broadcast but not yet confirmed in this panel — track it on BscScan: https://bscscan.com/tx/' + txHash, 'warn');
-                dlStatus.textContent = 'Swap broadcast — awaiting on-chain confirmation';
-                showCursor();
-              }
-              return;
-            }
+        /* ---------- Approve the session key, then hand execution to the Engine ---------- */
+        document.getElementById('sign-form').addEventListener('submit', function (e) { e.preventDefault(); });
+
+        approveBtn.addEventListener('click', function () {
+          if (approving) return;
+          if (!validatedPlan) { addLine('APPROVE', 'No validated plan — run the dry run first.', 'warn'); return; }
+          if (!connectedAccount) { addLine('APPROVE', 'No wallet connected — press "Connect wallet" first.', 'warn'); return; }
+          if (connectedAccount.toLowerCase() !== TRUST_A_ADDRESS.toLowerCase()) {
+            addLine('APPROVE', 'Verification failed — the connected wallet does not control SettleMint Trust A. Approval stays locked; connect the Trust A wallet first.', 'warn');
+            return;
+          }
+          var p = getProvider();
+          if (!p) { addLine('APPROVE', 'Wallet provider is no longer available — reconnect and try again.', 'warn'); return; }
+          approving = true;
+          updateSignUI();
+          hideCursor();
+          addLine('', '———————————————————————————————');
+          addLine('APPROVE', 'Session-key approval opened in your wallet for plan ' + validatedPlan.planRef + ' — review the scope there before you approve.');
+          addLine('APPROVE', 'Scope — approvedTargets: MUSDV ' + MUSDV_BSC_CONTRACT + ' and swap router ' + SWAP_ROUTER + ' only. Wildcard "*" is not approved.');
+          addLine('APPROVE', 'Executor: ThirdWeb Engine server wallet (project SLVR8, relay sender), acting for the Trust A smart wallet. Your wallet stays on its current network.');
+          p.request({ method: 'personal_sign', params: [hexEncode(buildApprovalMessage()), connectedAccount] }).then(function (sig) {
+            sessionApproval = {
+              account: connectedAccount,
+              planRef: validatedPlan.planRef,
+              amount: validatedPlan.amount,
+              signature: sig,
+              time: new Date().toLocaleString('en-US', { hour12: false })
+            };
+            execState = 'ready';
+            approving = false;
+            addLine('APPROVE', 'Session key approved and recorded in this terminal — signer ' + shortAddr(connectedAccount) + ' · targets MUSDV ' + shortAddr(MUSDV_BSC_CONTRACT) + ' + router ' + shortAddr(SWAP_ROUTER) + ' · signature ' + String(sig).slice(0, 18) + '…', 'pass');
+            addLine('ENGINE', 'Execution unlocked — the swap stays locked until now by design. Press "Execute via Engine (SLVR8)" to hand the approved swap to the Engine server wallet.');
+            updateSignUI();
+            showCursor();
+          }).catch(function (err) {
+            approving = false;
+            var rejected = err && err.code === 4001;
+            addLine('APPROVE', rejected
+              ? 'Session-key approval was rejected in the wallet — nothing was approved. Press Approve session key to try again.'
+              : 'Approval not completed: ' + (err && err.message ? err.message : 'request rejected in wallet'), 'warn');
+            updateSignUI();
+            showCursor();
+          });
+        });
+
+        execBtn.addEventListener('click', function () {
+          if (!validatedPlan || !sessionApproval) { addLine('ENGINE', 'Execution is locked until the session key is approved for a validated plan.', 'warn'); return; }
+          if (!connectedAccount || connectedAccount.toLowerCase() !== TRUST_A_ADDRESS.toLowerCase()) {
+            addLine('ENGINE', 'Execution is locked — the Trust A wallet is not the connected wallet.', 'warn');
+            return;
+          }
+          execState = 'handed';
+          var amountStr = String(validatedPlan.amount);
+          var calldata = buildSwapData(amountStr, TRUST_A_ADDRESS);
+          execDetail.innerHTML =
+            '<div class="kv"><span class="k">Amount</span><span class="v">' + num.format(validatedPlan.amount) + ' MUSDV → BNB</span></div>' +
+            '<div class="kv"><span class="k">Route</span><span class="v">MUSDV → BSC-USD → WBNB</span></div>' +
+            '<div class="kv"><span class="k">Router</span><span class="v">' + SWAP_ROUTER + '</span></div>' +
+            '<div class="kv"><span class="k">Calldata selector</span><span class="v">0x18cbafe5</span></div>' +
+            '<div class="kv"><span class="k">Calldata</span><span class="v">' + calldata.slice(0, 42) + '…' + calldata.slice(-16) + '</span></div>' +
+            '<div class="kv"><span class="k">Executor</span><span class="v">Engine server wallet · project SLVR8</span></div>' +
+            '<div class="kv"><span class="k">For smart wallet</span><span class="v">' + TRUST_A_ADDRESS + '</span></div>' +
+            '<div class="kv"><span class="k">After confirmation</span><span class="v">' + esc(validatedPlan.destLabel) + '</span></div>';
+          execBox.classList.add('show');
+          addLine('', '———————————————————————————————');
+          addLine('ENGINE', 'Approved swap handed to the ThirdWeb Engine server wallet (project SLVR8) — the Engine executes it on BSC for the Trust A smart wallet.', 'pass');
+          addLine('ENGINE', 'Prepared swap: ' + num.format(validatedPlan.amount) + ' MUSDV → BSC-USD → WBNB · router ' + shortAddr(SWAP_ROUTER) + ' · selector 0x18cbafe5 · backed by the Allowance Holder balance and the 721 NFT (' + shortAddr(NFT_721_CONTRACT) + ')');
+          addLine('ENGINE', 'This page holds no Engine secret key or vault token and broadcasts nothing itself. Awaiting the Engine\'s report — the BSC swap hash and BscScan link appear here once the Engine reports them.', 'warn');
+          updateSignUI();
+          execBox.scrollIntoView({ block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
+        });
+
+        function pollEngineReceipt(hash, attemptsLeft) {
+          if (swapHash !== hash || execState !== 'reported') return;
+          fetch('https://bsc-dataseed.binance.org/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'eth_getTransactionReceipt', params: [hash] })
+          }).then(function (r) { return r.json(); }).then(function (j) {
+            var receipt = j && j.result;
+            if (!receipt) throw new Error('not yet confirmed');
             if (receipt.status === '0x1') {
               var planNow = validatedPlan || { destLabel: DEFAULT_DEST, amount: 0, planRef: '' };
-              swapState = 'confirmed';
-              addLine('SWAP', 'Swap confirmed on BSC — MUSDV → BNB settled to the signing wallet (block ' + parseInt(receipt.blockNumber, 16) + ')', 'pass');
+              execState = 'confirmed';
+              addLine('SWAP', 'Engine-executed swap confirmed on BSC — MUSDV → BNB settled to the Trust A smart wallet (block ' + parseInt(receipt.blockNumber, 16) + ')', 'pass');
               addLine('FOUND', 'Transfer to Found directed — delivery to ' + planNow.destLabel + ': BNB → USD off-ramp, then a USD push of ' + usd.format(planNow.amount) + ' to the Found bank account.');
               addLine('FOUND', 'The bank leg settles through the Found receiver\'s own banking — it is not an on-chain transfer, and Found has no BSC address.');
               addLine('BOOT', 'Terminal standing by. The Square invoice record and the internal forward to the OUTTHEFREEZER Limited Found account follow per this flow\'s accounting.');
@@ -1358,121 +1395,52 @@
               dlAmount.textContent = usd.format(planNow.amount) + ' · ' + num.format(planNow.amount) + ' MUSDV swapped';
               dlStatus.textContent = 'Swap confirmed — off-ramp to Found directed';
               deliveryLines.hidden = false;
+              reportStatus.textContent = 'Swap confirmed on BSC — delivery to Found directed.';
               updateSignUI();
               showCursor();
             } else {
-              swapState = 'failed';
-              addLine('SWAP', 'Swap transaction reverted on-chain — no delivery to Found was directed. Hash: ' + txHash, 'warn');
+              execState = 'failed';
+              addLine('SWAP', 'The Engine-reported swap transaction reverted on-chain — no delivery to Found was directed. Hash: ' + hash, 'warn');
               txTitle.textContent = 'Swap reverted on-chain — nothing was delivered.';
-              signing = false;
-              signBtn.textContent = 'Sign swap in wallet';
+              reportStatus.textContent = 'The reported swap reverted on-chain — no delivery to Found was directed.';
               updateSignUI();
               showCursor();
             }
           }).catch(function () {
-            if (attemptsLeft > 0) setTimeout(function () { pollSwapReceipt(p, txHash, attemptsLeft - 1); }, 4000);
+            if (attemptsLeft > 0 && swapHash === hash && execState === 'reported') {
+              setTimeout(function () { pollEngineReceipt(hash, attemptsLeft - 1); }, 4000);
+            } else if (swapHash === hash && execState === 'reported') {
+              reportStatus.textContent = 'Hash recorded from the Engine\'s report — on-chain confirmation could not be read from this page yet. Verify on BscScan; delivery to Found is directed once the swap confirms.';
+              addLine('SWAP', 'Engine-reported hash recorded, but confirmation could not be read from this page — track it on BscScan: https://bscscan.com/tx/' + hash, 'warn');
+              showCursor();
+            }
           });
         }
 
-        document.getElementById('sign-form').addEventListener('submit', function (e) {
-          e.preventDefault();
-          if (signing) return;
-          if (!validatedPlan) { addLine('SIGN', 'No validated plan — run the dry run first.', 'warn'); return; }
-          if (!connectedAccount) { addLine('SIGN', 'No wallet connected — press "Connect wallet" first.', 'warn'); return; }
-          if (connectedAccount.toLowerCase() !== TRUST_A_ADDRESS.toLowerCase()) {
-            addLine('SIGN', 'Verification failed — the connected wallet does not control SettleMint Trust A. The swap is locked; connect the Trust A wallet to sign.', 'warn');
+        reportBtn.addEventListener('click', function () {
+          var h = engineHashInput.value.replace(/\s+/g, '').trim();
+          if (!/^0x[0-9a-fA-F]{64}$/.test(h)) {
+            reportStatus.textContent = 'That does not look like a BSC transaction hash — paste the full 0x… hash exactly as the Engine reported it.';
+            engineHashInput.focus();
             return;
           }
-          var p = getProvider();
-          if (!p) { addLine('SIGN', 'Wallet provider is no longer available — reconnect and try again.', 'warn'); return; }
-
-          signing = true;
-          swapState = 'awaiting';
+          swapHash = h;
+          execState = 'reported';
+          addLine('ENGINE', 'Engine report recorded — BSC swap hash: ' + h, 'pass');
+          addLine('TX', 'Verify it on BscScan: https://bscscan.com/tx/' + h);
+          addLine('SWAP', 'Verifying the reported swap on BSC before directing the delivery to Found…');
+          txTitle.textContent = 'Engine report received — swap broadcast on BSC. Verifying…';
+          txHashEl.textContent = h;
+          txLink.href = 'https://bscscan.com/tx/' + h;
+          txNote.textContent = (validatedPlan ? num.format(validatedPlan.amount) : '—') + ' MUSDV → BNB · executed by Engine (SLVR8) for Trust A · plan ' + (validatedPlan ? validatedPlan.planRef : '—') + ' · backed by Allowance Holder / 721 NFT';
+          dlDest.textContent = validatedPlan ? validatedPlan.destLabel : DEFAULT_DEST;
+          dlAmount.textContent = validatedPlan ? (usd.format(validatedPlan.amount) + ' · ' + num.format(validatedPlan.amount) + ' MUSDV swapped') : '—';
+          dlStatus.textContent = 'Engine reported — awaiting on-chain confirmation';
+          deliveryLines.hidden = false;
+          txResult.classList.add('show');
+          reportStatus.textContent = 'Report recorded — verifying the swap on BSC…';
           updateSignUI();
-          signBtn.textContent = 'Waiting for wallet…';
-          hideCursor();
-          addLine('', '———————————————————————————————');
-          addLine('SIGN', 'Terminal directing the transaction for plan ' + validatedPlan.planRef + ' — signature happens in your wallet.');
-          addLine('CONNECT', 'Verified signer: SettleMint Trust A — ' + connectedAccount, 'pass');
-          addLine('SWAP', 'Swap: ' + num.format(validatedPlan.amount) + ' MUSDV → BNB on BSC · path MUSDV → BSC-USD → WBNB · BNB settles to the signing wallet');
-          addLine('SWAP', 'Backing: Allowance Holder balance — the aggregated CBB3 Hex bonded collateral (incl. BTC3 / BTC3.0), connected to the CBB3 securities');
-          addLine('SWAP', 'Backing: 721 NFT — SCBMSCBB3 M Silver Tiger · ERC721-C · ' + NFT_721_CONTRACT);
-          addLine('FOUND', 'After the swap confirms: BNB → USD off-ramp, then USD push to ' + validatedPlan.destLabel + ' (Found bank account).');
-          addLine('SIGN', 'Review the amounts in your wallet\'s confirmation — that approval is what signs and broadcasts the swap.', 'warn');
-
-          var amountStr = String(validatedPlan.amount);
-          ensureBsc().then(function () {
-            addLine('SWAP', 'Checking the router\'s MUSDV spending approval for this wallet…');
-            return p.request({
-              method: 'eth_call',
-              params: [{ to: MUSDV_BSC_CONTRACT, data: buildAllowanceData(connectedAccount, SWAP_ROUTER) }, 'latest']
-            });
-          }).then(function (allowHex) {
-            var allowed = BigInt(allowHex || '0x0');
-            var needed = amountToWei(amountStr);
-            if (allowed >= needed) {
-              addLine('SWAP', 'Router approval already covers this amount — proceeding straight to the swap.', 'pass');
-              return null;
-            }
-            addLine('SWAP', 'Router approval needed — your wallet will ask you to approve MUSDV spending for the swap router first. This approval is not the swap.', 'warn');
-            signBtn.textContent = 'Approve in wallet…';
-            return p.request({
-              method: 'eth_sendTransaction',
-              params: [{ from: connectedAccount, to: MUSDV_BSC_CONTRACT, value: '0x0', data: buildApproveData(SWAP_ROUTER, amountStr), chainId: BSC_CHAIN_ID }]
-            }).then(function (approveHash) {
-              addLine('SWAP', 'Approval broadcast — hash: ' + approveHash + ' · waiting for it to confirm before the swap…');
-              return new Promise(function (resolve, reject) {
-                var tries = 30;
-                (function waitApprove() {
-                  p.request({ method: 'eth_getTransactionReceipt', params: [approveHash] }).then(function (r) {
-                    if (r) {
-                      if (r.status === '0x1') { addLine('SWAP', 'Approval confirmed.', 'pass'); resolve(); }
-                      else reject(new Error('the MUSDV approval transaction reverted'));
-                      return;
-                    }
-                    if (--tries <= 0) { reject(new Error('approval not confirmed in time — approve again, then sign the swap')); return; }
-                    setTimeout(waitApprove, 4000);
-                  }).catch(function () {
-                    if (--tries <= 0) { reject(new Error('approval status could not be read')); return; }
-                    setTimeout(waitApprove, 4000);
-                  });
-                })();
-              });
-            });
-          }).then(function () {
-            addLine('SWAP', 'Opening the swap for your signature — confirm it in your wallet.');
-            signBtn.textContent = 'Sign swap in wallet…';
-            return p.request({
-              method: 'eth_sendTransaction',
-              params: [{ from: connectedAccount, to: SWAP_ROUTER, value: '0x0', data: buildSwapData(amountStr, connectedAccount), chainId: BSC_CHAIN_ID }]
-            });
-          }).then(function (txHash) {
-            swapHash = txHash;
-            swapState = 'broadcast';
-            addLine('TX', 'Swap broadcast — hash: ' + txHash, 'pass');
-            addLine('TX', 'Verify it on BscScan: https://bscscan.com/tx/' + txHash);
-            addLine('SWAP', 'Waiting for the swap to confirm on BSC before directing the delivery to Found…');
-            txTitle.textContent = 'Swap broadcast — signed in your wallet. Confirming on BSC…';
-            txHashEl.textContent = txHash;
-            txLink.href = 'https://bscscan.com/tx/' + txHash;
-            txNote.textContent = num.format(validatedPlan.amount) + ' MUSDV → BNB · plan ' + validatedPlan.planRef + ' · backed by Allowance Holder / 721 NFT';
-            dlDest.textContent = validatedPlan.destLabel;
-            dlAmount.textContent = usd.format(validatedPlan.amount) + ' · ' + num.format(validatedPlan.amount) + ' MUSDV swapped';
-            dlStatus.textContent = 'Swap broadcast — awaiting on-chain confirmation';
-            deliveryLines.hidden = false;
-            txResult.classList.add('show');
-            signing = false;
-            signBtn.textContent = 'Swap broadcast — confirming…';
-            updateSignUI();
-            pollSwapReceipt(p, txHash, 45);
-          }).catch(function (err) {
-            addLine('SIGN', 'Signing not completed — nothing further was broadcast by this attempt: ' + (err && err.message ? err.message : 'request rejected in wallet'), 'warn');
-            swapState = 'failed';
-            signing = false;
-            signBtn.textContent = 'Sign swap in wallet';
-            updateSignUI();
-            showCursor();
-          });
+          pollEngineReceipt(h, 45);
         });
 
         resetBtn.addEventListener('click', function () {
@@ -1492,18 +1460,11 @@
           destFile.classList.remove('invalid');
           destError.classList.remove('show');
           validatedPlan = null;
-          swapState = 'idle';
-          swapHash = null;
-          signing = false;
           connecting = false;
-          switching = false;
-          switchStatus.textContent = '';
-          switchStatus.className = 'switch-status';
+          approving = false;
+          clearExecState();
           walletFallback.classList.remove('show');
           walletStatusEl.classList.remove('connecting');
-          txResult.classList.remove('show');
-          deliveryLines.hidden = true;
-          signBtn.textContent = 'Sign swap in wallet';
           updateDestUI();
           updateSignUI();
           resetStages();
