@@ -148,6 +148,27 @@
   .tw-email input:focus{border-color:var(--gold)}
   .tw-email .btn{flex:0 1 auto;font-size:13px;padding:10px 13px}
   .tw-head-btn{border-color:rgba(255,215,0,.5);color:var(--gold)}
+
+  /* UTB test panel — 1 MUSDV swapAndExecute test, separate from the 750 flow */
+  .utb{padding:12px 16px 13px;border-bottom:1px solid var(--line);border-top:2px solid var(--amber);background:rgba(245,185,66,.05)}
+  .utb-head{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .utb-title{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.09em;color:var(--dim);margin:0}
+  .utb-title b{color:var(--amber);font-weight:600}
+  .utb-badge{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;border:1px solid var(--amber);border-radius:999px;padding:3px 9px;color:var(--amber);background:rgba(245,185,66,.08)}
+  .utb-badge.signed{border-color:var(--gold);color:var(--gold)}
+  .utb-badge.done{border-color:var(--green);color:var(--pass);background:rgba(62,142,65,.14)}
+  .utb-head .spacer{flex:1}
+  .utb-sub{margin:8px 0 0;font-size:12.5px;line-height:1.55;color:var(--text)}
+  .utb-sub b{color:#fff}
+  .utb-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px 18px;margin-top:10px}
+  .utb-cell{min-width:0}.utb-cell .k{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.08em;color:var(--dim);display:block}
+  .utb-cell .v{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:#eaf4fa;line-height:1.45;display:block;margin-top:1px;overflow-wrap:anywhere}
+  .utb-cell .v a{color:var(--pass);font-weight:600}
+  .utb-cell.wide{grid-column:1/-1}
+  .utb-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}
+  .utb-actions .btn{flex:1 1 auto;font-size:13.5px;padding:10px 13px}
+  .utb-note{margin:9px 0 0;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--dim);line-height:1.55}
+  @media(max-width:560px){.utb-grid{grid-template-columns:1fr}}
   @media(max-width:560px){.tw-grid,.tw-wallets{grid-template-columns:1fr}}
 
   .steps{display:flex;gap:0;border-bottom:1px solid var(--line);background:rgba(255,255,255,.02)}
@@ -316,6 +337,50 @@
       <p class="tw-note" id="tw-note">This window holds no keys. The ThirdWeb v5 SDK (client dbc43f4d…ea99) creates the wallet in-page — inAppWallet for Google, Apple, Facebook, email code and passkey, createWallet for MetaMask, Coinbase Wallet and Trust Wallet — and signing runs through that connected wallet in this same window. The Engine (SLVR8) still executes the approved Terminal leg in step 3.</p>
     </div>
 
+    <div class="utb" id="utb-panel" aria-label="UTB test — 1 MUSDV swapAndExecute">
+      <div class="utb-head">
+        <p class="utb-title"><b>UTB TEST</b> — 1 MUSDV · swapAndExecute · BSC · SEPARATE FROM THE 750 FLOW</p>
+        <span class="spacer"></span>
+        <span class="utb-badge" id="utb-badge">TEST · NOT SIGNED</span>
+      </div>
+      <p class="utb-sub">A <b>1 MUSDV test</b> of the UTB <b>swapAndExecute</b> call — the call below is decoded from Trust A's own $1.00 transaction (Oct 25). Trust A signs the fresh call here, in this Terminal, and the Engine (SLVR8) executes it on BSC. The 750 MUSDV PancakeSwap flow in the steps below is unchanged and runs separately.</p>
+      <div class="utb-grid">
+        <div class="utb-cell"><span class="k">CONTRACT — UTB · BSC (56)</span><span class="v"><a href="https://bscscan.com/address/0x39B1F7c5b1ae6a3Cb9bbbd616B44ceD9F53882E0" target="_blank" rel="noopener">0x39B1…82E0</a></span></div>
+        <div class="utb-cell"><span class="k">FUNCTION</span><span class="v">swapAndExecute · selector 0x9be111d1</span></div>
+        <div class="utb-cell"><span class="k">SWAPPER ID</span><span class="v">1</span></div>
+        <div class="utb-cell"><span class="k">DIRECTION</span><span class="v">0 · EXACT_IN</span></div>
+        <div class="utb-cell"><span class="k">TOKEN IN</span><span class="v">MUSDV · 0x603d…0eAA</span></div>
+        <div class="utb-cell"><span class="k">TOKEN OUT</span><span class="v">USDC (BSC) · 0x8AC7…580d</span></div>
+        <div class="utb-cell"><span class="k">AMOUNT IN</span><span class="v">0.9935 MUSDV · 993500000000000000</span></div>
+        <div class="utb-cell"><span class="k">APP FEE — TOTAL 1.0000 MUSDV</span><span class="v">0.0065 MUSDV → 0x79ad…05c7 · ThirdWeb charge + 0.001%</span></div>
+        <div class="utb-cell"><span class="k">AMOUNT OUT (MINIMUM)</span><span class="v">0 · no minimum — see note</span></div>
+        <div class="utb-cell"><span class="k">DUST OUT · EXECUTION FEE · PAYLOAD</span><span class="v">0 · 0 · empty (0x)</span></div>
+        <div class="utb-cell"><span class="k">TARGET · PAYMENT OPERATOR · REFUND</span><span class="v">SettleMint Trust A · 0x68a0…46F2</span></div>
+        <div class="utb-cell"><span class="k">FEE DATA</span><span class="v">chainId 56 · appId 0x4d9b54bf… (as decoded) · affiliateId 0 · bridgeFee 0</span></div>
+        <div class="utb-cell"><span class="k">DEADLINE — FRESH</span><span class="v" id="utb-deadline">— generated in this Terminal</span></div>
+        <div class="utb-cell"><span class="k">SIGNATURE</span><span class="v" id="utb-sig">Not signed — Trust A signs the fresh call here</span></div>
+        <div class="utb-cell wide"><span class="k">TX ID — FRESH</span><span class="v" id="utb-txid">— generated in this Terminal</span></div>
+        <div class="utb-cell wide"><span class="k">SOURCE RECORD</span><span class="v">$1.00 tx <a href="https://bscscan.com/tx/0xcab9f0cf44185684cd3489070ec1d0c8c40457b3b47319ce732460fd3c425b42" target="_blank" rel="noopener">0xcab9…b42</a> · Oct 25 · decoded call this test is built from</span></div>
+      </div>
+      <div class="utb-actions">
+        <button type="button" class="btn btn-sign" id="utb-sign-btn">Sign UTB test — Trust A</button>
+        <button type="button" class="btn btn-exec" id="utb-exec-btn" disabled>Execute UTB test via Engine</button>
+        <button type="button" class="btn btn-ghost" id="utb-copy-btn" disabled>Copy signed call</button>
+      </div>
+      <p class="utb-note">From the $1.00 record, unchanged: swapperId 1, the 0.9935 / 0.0065 MUSDV split, the fee recipient, and Trust A as target, payment operator and refund. Changed for this test only: tokenOut is BSC USDC (the record's leg used the zero address), the amountOut minimum is 0 (the record's amountOut belonged to that zero-address leg — no USDC quote is in the record, so none is invented), and the deadline and txId are generated fresh here. The signature is never taken from the record: Trust A signs the fresh call above, the signature starts the process, and the Engine (SLVR8) executes the signed call. This window holds no Engine secret and broadcasts nothing itself.</p>
+    </div>
+
+    <div class="hash-row" id="utb-hash-row">
+      <input id="utb-hash" type="text" placeholder="BSC hash for the UTB test, from Engine — 0x…" aria-label="BSC hash for the UTB test as reported by the Engine" />
+      <button type="button" class="btn btn-ghost" id="utb-report-btn" style="color:#fff">Record test hash</button>
+    </div>
+
+    <div class="result" id="utb-result">
+      <strong>UTB test hash recorded — 1 MUSDV swapAndExecute executed by the Engine on BSC.</strong><br />
+      <span class="hash" id="utb-result-hash"></span><br />
+      <a id="utb-result-link" href="#" target="_blank" rel="noopener">View on BscScan</a> · <span id="utb-result-note"></span>
+    </div>
+
     <div class="steps" aria-hidden="true">
       <div class="step" id="st-validate"><span class="n">1</span><span class="lbl">VALIDATE</span></div>
       <div class="step" id="st-sign"><span class="n">2</span><span class="lbl">THIRDWEB CONNECT &amp; SIGN</span></div>
@@ -367,6 +432,9 @@
   var USDC_BSC='0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d';
   var ROUTER='0x10ED43C718714eb63d5aA57B78B54704E256024E';
   var NFT='0x1c258040aA56fc805De5659355a245f3FD7AD90f';
+  var UTB='0x39B1F7c5b1ae6a3Cb9bbbd616B44ceD9F53882E0';
+  var UTB_SRC_TX='0xcab9f0cf44185684cd3489070ec1d0c8c40457b3b47319ce732460fd3c425b42';
+  var UTB_FEE_TO='0x79ad858cdff50ca6728d2531894001f221e805c7';
   var DEST='Found — MKMANAGEMENT receiver';
   var $=function(id){return document.getElementById(id)};
   var consoleEl=$('console'), amountEl=$('amount'), validateBtn=$('validate-btn'), signBtn=$('sign-btn'), execBtn=$('exec-btn'), resetBtn=$('reset-btn'), copyBtn=$('copy-btn'), fallbackEl=$('fallback'), hashRow=$('hash-row'), hashInput=$('engine-hash'), reportBtn=$('report-btn'), reportStatus=$('report-status'), resultEl=$('result');
@@ -374,6 +442,7 @@
   var num=new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
   var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var logLines=[], plan=null, account=null, approval=null, handed=false, swapHash=null, busy=false;
+  var utbSig=null, utbHanded=false, utbHash=null, utbDeadline=0, utbTxId='';
   var twProvider=null, twConnected=false, twViaSdk=false;
   /* ThirdWeb v5 wallet options — inAppWallet strategies and external wallet IDs */
   var TW_OPTIONS={
@@ -446,6 +515,7 @@
     copyBtn.disabled=!logLines.length;
     renderTw();
     renderReport();
+    utbSync();
   }
   function renderMap(){
     $('stable-musdv').setAttribute('aria-pressed',stable==='MUSDV'?'true':'false');
@@ -570,6 +640,7 @@
     add('BOOT',veritasSummary?'VERITAS summary already received via EMpro — node online.':'VERITAS node offline — start EMpro. No block number or mint status is shown until EMpro reports one.');
     add('BOOT','Wallet: direct ThirdWeb v5 connect & sign, inside this Terminal — the SDK runs in this page with the MAP client (dbc43f4d…ea99); everything happens within MAP, no redirect and no separate MAP connect button. In-App Wallet (Google, Apple, Facebook, email code, passkey) or MetaMask, Coinbase Wallet and Trust Wallet — use the ThirdWeb Wallet panel below the Terminal Report, the ThirdWeb button in the header, or step 2.');
     add('BOOT','Single session: Validate → ThirdWeb Connect & Sign → Execute. Connect in the ThirdWeb panel any time; signing on step 2 opens the signature request in your wallet — connecting alone never prompts, signing does.');
+    add('BOOT','UTB TEST panel (below the ThirdWeb Wallet panel): a separate 1 MUSDV swapAndExecute test on UTB 0x39B1…82E0 · BSC — swapperId 1 · MUSDV → USDC · decoded from Trust A\u2019s $1.00 record (Oct 25), with a fresh deadline and fresh txId generated here. Trust A signs the fresh call in this Terminal; the Engine executes it. The 750 PancakeSwap flow is unchanged.');
     add('BOOT','Ready. Set the amount, set the toggles, and press Validate.'); sync();
   }
   function invalidate(reason){ if(!plan)return; plan=null; approval=null; handed=false; swapHash=null; hashRow.classList.remove('show'); resultEl.classList.remove('show'); fallbackEl.classList.remove('show'); add('WARN',reason+' — validated plan cleared. Validate again.','warn-t'); sync(); }
@@ -707,6 +778,7 @@
     if(window.TW5&&twViaSdk){ try{ window.TW5.disconnect(); }catch(e){} }
     twConnected=false; twViaSdk=false; twProvider=null; account=null; approval=null; handed=false; swapHash=null;
     hashRow.classList.remove('show'); resultEl.classList.remove('show');
+    utbSig=null; utbHanded=false; utbHash=null; $('utb-hash-row').classList.remove('show'); $('utb-result').classList.remove('show');
     add('SIGN','ThirdWeb wallet disconnected in this Terminal — signature cleared. Validate and sign again to run.','warn-t'); sync();
   });
   var twBtns=document.querySelectorAll('[data-tw]');
@@ -719,6 +791,116 @@
   })(twBtns[twi]);
   window.addEventListener('tw5-ready',function(){ renderTw(); });
   window.addEventListener('tw5-failed',function(){ renderTw(); });
+
+  /* UTB TEST — 1 MUSDV swapAndExecute, separate from the 750 flow above.
+     Built from Trust A's own decoded $1.00 call (Oct 25, UTB_SRC_TX):
+     swapperId 1, EXACT_IN, 0.9935 MUSDV in + 0.0065 MUSDV app fee = 1.0000,
+     Trust A as target / paymentOperator / refund. Changed for this test
+     only: tokenOut is BSC USDC (the record's leg used the zero address)
+     and the amountOut minimum is 0 (the record's amountOut belonged to
+     that leg; no USDC quote is in the record, so none is invented).
+     Deadline and txId are generated fresh here; the signature is never
+     taken from the record — Trust A signs the fresh call in this Terminal
+     through the same ThirdWeb connection, and the Engine (SLVR8)
+     executes the signed call on BSC, as with the Terminal leg. */
+  function utbFresh(force){
+    var now=Math.floor(Date.now()/1000);
+    if(!force&&utbTxId&&utbDeadline>now+300)return false;
+    var bytes=new Uint8Array(32), i, h='0x';
+    if(window.crypto&&window.crypto.getRandomValues)window.crypto.getRandomValues(bytes); else for(i=0;i<32;i++)bytes[i]=Math.floor(Math.random()*256);
+    for(i=0;i<32;i++)h+=('0'+bytes[i].toString(16)).slice(-2);
+    utbTxId=h; utbDeadline=now+86400; return true;
+  }
+  function utbMessage(){
+    var lines=[
+      'iOTFZXX — UTB TEST · 1 MUSDV · swapAndExecute (signed via ThirdWeb, inside the Terminal)',
+      'TEST ONLY — separate from the 750 MUSDV PancakeSwap flow; that flow is unchanged.',
+      'Signer: SettleMint Trust A '+account,
+      'Contract: UTB '+UTB+' · BSC (56)',
+      'Function: swapAndExecute · selector 0x9be111d1',
+      'swapperId: 1 · direction: 0 (EXACT_IN)',
+      'tokenIn: MUSDV '+MUSDV,
+      'tokenOut: USDC '+USDC_BSC+' (BSC) — the $1.00 record used the zero address for its MUSDV leg; this test is MUSDV → USDC',
+      'amountIn: 0.9935 MUSDV (993500000000000000)',
+      'amountOut (minimum): 0 — no USDC quote is in the record; the $1.00 amountOut applied to its zero-address leg and is not reused',
+      'dustOut: 0',
+      'target: '+TRUST_A,
+      'paymentOperator: '+TRUST_A,
+      'refund: '+TRUST_A,
+      'executionFee: 0 · payload: empty (0x)',
+      'FeeData: chainId 56 · appId 0x4d9b54bf… (as decoded from the $1.00 record) · affiliateId 0 · bridgeFee 0 · deadline '+utbDeadline+' ('+new Date(utbDeadline*1000).toISOString()+')',
+      'txId (fresh): '+utbTxId,
+      'appFees: 0.0065 MUSDV (6500000000000000) → '+UTB_FEE_TO+' · token MUSDV — ThirdWeb charge + 0.001%, as decoded from the $1.00 record',
+      'Total from Trust A: 1.0000 MUSDV',
+      'Source record: $1.00 tx '+UTB_SRC_TX+' (Oct 25)'
+    ];
+    return lines.join('\n');
+  }
+  function utbCall(){
+    return {
+      test:'1 MUSDV — UTB swapAndExecute · separate from the 750 MUSDV PancakeSwap flow',
+      contract:UTB, chainId:56, function:'swapAndExecute', selector:'0x9be111d1',
+      swapInstructions:{swapperId:1, swapParams:{amountIn:'993500000000000000', amountOut:'0', dustOut:'0', tokenIn:MUSDV, tokenOut:USDC_BSC, direction:0, refund:TRUST_A}},
+      target:TRUST_A, paymentOperator:TRUST_A, refund:TRUST_A, executionFee:'0', payload:'0x', txId:utbTxId,
+      feeData:{appId:'0x4d9b54bf… (as decoded from the $1.00 record)', affiliateId:0, bridgeFee:'0', deadline:utbDeadline, chainId:56, appFees:[{recipient:UTB_FEE_TO, token:MUSDV, amount:'6500000000000000'}]},
+      signature:utbSig?utbSig.sig:null,
+      sourceRecord:UTB_SRC_TX
+    };
+  }
+  function utbSync(){
+    var badge=$('utb-badge'); if(!badge)return;
+    if(!utbSig)utbFresh(false);
+    $('utb-deadline').textContent=utbDeadline+' · '+new Date(utbDeadline*1000).toLocaleString('en-US',{hour12:false});
+    $('utb-txid').textContent=utbTxId;
+    $('utb-sig').textContent=utbSig?('Signed · '+utbSig.time+' · '+String(utbSig.sig).slice(0,18)+'…'):'Not signed — Trust A signs the fresh call here';
+    badge.textContent=utbHash?'TEST · HASH RECORDED ✓':utbHanded?'TEST · WITH ENGINE — AWAITING HASH':utbSig?'TEST · SIGNED ✓':'TEST · NOT SIGNED';
+    badge.className='utb-badge'+(utbHash?' done':utbSig?' signed':'');
+    var sb=$('utb-sign-btn'); if(sb){ sb.disabled=busy||!!utbSig; sb.textContent=utbSig?'✓ Signed — Trust A':'Sign UTB test — Trust A'; }
+    var eb=$('utb-exec-btn'); if(eb){ eb.disabled=busy||!utbSig||utbHanded; eb.textContent=utbHash?'✓ Executed — hash recorded':utbHanded?'Handed to Engine — awaiting hash':'Execute UTB test via Engine'; }
+    var cb=$('utb-copy-btn'); if(cb)cb.disabled=!utbSig;
+  }
+  function utbSign(){
+    if(busy||utbSig)return;
+    utbFresh(false);
+    busy=true; fallbackEl.classList.remove('show'); sync();
+    twConnect().then(function(ok){
+      if(!ok||!twConnected){ busy=false; sync(); return; }
+      add('SIGN','UTB TEST — signing the fresh 1 MUSDV swapAndExecute call with Trust A via ThirdWeb, in this Terminal. swapperId 1 · MUSDV → USDC · amountIn 0.9935 MUSDV · app fee 0.0065 MUSDV · fresh txId '+utbTxId.slice(0,10)+'… · deadline '+utbDeadline+'. Review and approve in your wallet.');
+      var signCall=(twViaSdk&&window.TW5)?window.TW5.signMessage(utbMessage()):twProvider.request({method:'personal_sign',params:[hexEncode(utbMessage()),account]});
+      return signCall.then(function(sig){
+        utbSig={sig:sig,time:new Date().toLocaleString('en-US',{hour12:false})};
+        busy=false;
+        add('SIGN','UTB TEST signed — Trust A signature recorded · '+utbSig.time+' · signature '+String(sig).slice(0,18)+'… The signature starts the process; press Execute UTB test via Engine.','pass');
+        sync();
+      });
+    }).catch(function(err){
+      busy=false;
+      var rej=err&&err.code===4001;
+      add('WARN',rej?'UTB TEST — request rejected in the wallet — nothing signed. Press Sign UTB test to try again.':'UTB TEST — not completed: '+((err&&err.message)||'wallet request failed'),'warn-t'); sync();
+    });
+  }
+  $('utb-sign-btn').addEventListener('click',utbSign);
+  $('utb-exec-btn').addEventListener('click',function(){
+    if(!utbSig||utbHanded)return;
+    if(utbDeadline<=Math.floor(Date.now()/1000)){ utbSig=null; utbFresh(true); add('WARN','UTB TEST — the signed call\u2019s deadline has passed, so its signature is cleared and a fresh txId and deadline were generated. Sign the fresh call to run the test.','warn-t'); sync(); return; }
+    utbHanded=true;
+    add('EXEC','UTB TEST handed to Engine server wallet (SLVR8) — swapAndExecute on UTB '+UTB+' · BSC (56) · selector 0x9be111d1','pass');
+    add('EXEC','UTB TEST call — swapperId 1 · EXACT_IN · 0.9935 MUSDV → USDC · target / paymentOperator / refund Trust A · app fee 0.0065 MUSDV → '+UTB_FEE_TO+' · txId '+utbTxId+' · signature '+String(utbSig.sig).slice(0,18)+'…');
+    add('WARN','This window holds no Engine secret and broadcasts nothing — when the Engine returns the BSC hash for the UTB test, paste it below to record it.','warn-t');
+    $('utb-hash-row').classList.add('show'); $('utb-hash').focus(); sync();
+  });
+  $('utb-report-btn').addEventListener('click',function(){
+    var h=$('utb-hash').value.replace(/\s+/g,'').trim();
+    if(!/^0x[0-9a-fA-F]{64}$/.test(h)){ add('WARN','UTB TEST — paste the full 0x… hash exactly as the Engine reported it.','warn-t'); $('utb-hash').focus(); return; }
+    utbHash=h; add('EXEC','UTB TEST — Engine hash recorded: '+h,'pass');
+    add('CHECK','UTB TEST — this window queries no node or RPC directly — confirm the test swap on BscScan (link below).','pass');
+    $('utb-result-hash').textContent=h; $('utb-result-link').href='https://bscscan.com/tx/'+h; $('utb-result-note').textContent='1 MUSDV TEST · swapAndExecute · swapperId 1 · MUSDV → USDC · txId '+utbTxId; $('utb-result').classList.add('show'); sync();
+  });
+  $('utb-copy-btn').addEventListener('click',function(){
+    var b=$('utb-copy-btn'), t=JSON.stringify(utbCall(),null,2);
+    function d(){ b.textContent='Copied'; setTimeout(function(){ b.textContent='Copy signed call'; },1500); }
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(d,d); else d();
+  });
 
   execBtn.addEventListener('click',function(){
     if(!plan||!approval||handed)return;
@@ -739,7 +921,7 @@
     $('result-hash').textContent=h; $('result-link').href='https://bscscan.com/tx/'+h; $('result-note').textContent=num.format(plan.amount)+' '+STABLE_CFG[plan.stable].route+' · EMpro Treasury → Trust'+(plan.mm!=='off'?' · branch '+MM_LABEL[plan.mm]:'')+' · Terminal → Found fiat · plan '+plan.ref; resultEl.classList.add('show'); sync();
   });
 
-  resetBtn.addEventListener('click',function(){ plan=null; account=null; approval=null; handed=false; swapHash=null; busy=false; twConnected=false; twViaSdk=false; twProvider=null; twKey='google'; signBtn.dataset.busy=''; amountEl.value='750'; stable='MUSDV'; mm='off'; renderMap(); hashRow.classList.remove('show'); resultEl.classList.remove('show'); fallbackEl.classList.remove('show'); hashInput.value=''; boot(); });
+  resetBtn.addEventListener('click',function(){ plan=null; account=null; approval=null; handed=false; swapHash=null; busy=false; twConnected=false; twViaSdk=false; twProvider=null; twKey='google'; signBtn.dataset.busy=''; amountEl.value='750'; stable='MUSDV'; mm='off'; renderMap(); hashRow.classList.remove('show'); resultEl.classList.remove('show'); fallbackEl.classList.remove('show'); hashInput.value=''; utbSig=null; utbHanded=false; utbHash=null; utbFresh(true); $('utb-hash-row').classList.remove('show'); $('utb-result').classList.remove('show'); $('utb-hash').value=''; boot(); });
   copyBtn.addEventListener('click',function(){ var t=logLines.join('\n'); function d(){copyBtn.textContent='Copied'; setTimeout(function(){copyBtn.textContent='Copy log'},1500)} if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(d,d); else d(); });
 
   $('veritas-ask').addEventListener('click',function(){ veritasAsked=true; add('BOOT','Asking EMpro for a VERITAS node summary…'); checkVeritas(true); });
@@ -747,6 +929,7 @@
   window.addEventListener('message',function(ev){ var d=ev&&ev.data; if(d&&typeof d==='object'&&(d.type==='veritas-summary'||d.type==='empro-veritas'))applyVeritas(d.summary||d); });
 
   renderMap();
+  utbFresh(true);
   checkVeritas(false);
   boot();
 })();
